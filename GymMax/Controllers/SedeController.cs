@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace GymMax.Controllers {
-    public class HomeController : Controller {
+    public class SedeController : Controller {
+
+        [HttpGet]
         public IActionResult Index() {
             return View();
         }
 
-
     }
 }
-
