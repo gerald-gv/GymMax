@@ -1,6 +1,6 @@
 @model IEnumerable<GymMax.Models.Plan>
 @{ 
-    ViewData["Title"] = "Planes"; 
+    ViewData["Title"] = "Planes";
     Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
 }
 
@@ -15,6 +15,51 @@
         </a>
     </div>
 
+    <!-- FILTROS -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-action="Index">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-4 col-md-6">
+                        <label class="form-label small fw-semibold text-secondary">Nombre</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="nombre" value="@ViewBag.FiltroNombre"
+                                   class="form-control bg-light border-start-0" placeholder="Buscar por nombre..." />
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3">
+                        <label class="form-label small fw-semibold text-secondary">Precio mínimo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">S/</span>
+                            <input type="number" name="precioMin" value="@ViewBag.FiltroPrecioMin"
+                                   class="form-control bg-light" step="0.01" min="0" placeholder="0.00" />
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3">
+                        <label class="form-label small fw-semibold text-secondary">Precio máximo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">S/</span>
+                            <input type="number" name="precioMax" value="@ViewBag.FiltroPrecioMax"
+                                   class="form-control bg-light" step="0.01" min="0" placeholder="0.00" />
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100" title="Filtrar">
+                            <i class="bi bi-funnel-fill"></i>
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100" title="Limpiar filtros">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLA -->
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">

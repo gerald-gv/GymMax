@@ -118,6 +118,13 @@ public class CoachController : Controller
                 coachDb.FechaIngreso = coach.FechaIngreso;
                 coachDb.Activo       = coach.Activo;
 
+                // Sincronizar EstadoUsuario con el nuevo Activo del coach
+                var usuarioAsociado = await _context.Usuarios.FindAsync(coachDb.UsuarioId);
+                if (usuarioAsociado != null)
+                    usuarioAsociado.Estado = coach.Activo
+                        ? GymMax.Enums.EstadoUsuario.Activo
+                        : GymMax.Enums.EstadoUsuario.Inactivo;
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

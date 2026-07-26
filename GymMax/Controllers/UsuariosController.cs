@@ -184,9 +184,14 @@ namespace GymMax.Controllers
                         usuarioDb.PasswordHash = passwordHasher.HashPassword(usuarioDb, NuevaPassword);
                     }
 
+                    // Si el usuario es coach, sincronizar Coach.Activo con su nuevo estado
+                    var coachAsociado = await _context.Coaches
+                        .FirstOrDefaultAsync(c => c.UsuarioId == usuarioDb.UsuarioId);
+                    if (coachAsociado != null)
+                        coachAsociado.Activo = usuarioDb.Estado == EstadoUsuario.Activo;
+
                     // Guardar los cambios
-                    await _context.SaveChangesAsync();
-                }
+                    await _context.SaveChangesAsync();                }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UsuarioExists(usuarioInput.UsuarioId))
