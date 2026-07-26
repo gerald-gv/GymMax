@@ -1,3 +1,5 @@
+using GymMax.DTOs;
+
 namespace GymMax.Models
 {
     public class DashboardViewModel
@@ -20,12 +22,5 @@ namespace GymMax.Models
         // Últimos 5 usuarios registrados
         public List<UltimoUsuarioDto> UltimosUsuarios { get; set; } = new();
     }
-
-    public class UltimoUsuarioDto
-    {
-        public string NombreCompleto { get; set; } = string.Empty;
-        public string Email          { get; set; } = string.Empty;
-        public string Rol            { get; set; } = string.Empty;
-        public DateTime FechaRegistro { get; set; }
-    }
+    
 }
