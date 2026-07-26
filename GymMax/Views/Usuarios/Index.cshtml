@@ -2,123 +2,153 @@
 @using GymMax.Enums
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Usuarios";
 }
 
-<h1>Usuarios</h1>
+<div class="container-fluid p-0">
 
-<p>
-    <a asp-action="Create">Crear Nuevo Usuario</a>
-</p>
+    <!-- HEADER Y ACCIÓN PRINCIPAL -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 fw-bold text-dark m-0">Usuarios</h2>
+            <p class="text-muted small m-0">Administra el directorio de miembros y personal del gimnasio.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-person-plus-fill"></i>
+            <span>Crear Nuevo Usuario</span>
+        </a>
+    </div>
 
-<form method="get" asp-action="Index" class="mb-3">
-    <div class="row g-2 align-items-end">
-        <div class="col-md-3">
-            <label class="form-label">Nombre o apellido</label>
-            <input type="text" name="nombre" value="@ViewBag.FiltroNombre" class="form-control" placeholder="Buscar..." />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Rol</label>
-            <select name="rolId" class="form-select" asp-items="ViewBag.FiltroRolId">
-                <option value="">Todos</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Estado</label>
-            <select name="estado" class="form-select" asp-items="ViewBag.FiltroEstado">
-                <option value="">Todos</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Registro desde</label>
-            <input type="date" name="fechaDesde" value="@ViewBag.FiltroDesde" class="form-control" />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Registro hasta</label>
-            <input type="date" name="fechaHasta" value="@ViewBag.FiltroHasta" class="form-control" />
-        </div>
-        <div class="col-md-1 d-flex gap-1">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-            <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+    <!-- CARD FILTROS -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-action="Index">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label small fw-semibold text-secondary">Nombre o apellido</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="nombre" value="@ViewBag.FiltroNombre" class="form-control bg-light border-start-0" placeholder="Buscar..." />
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-3">
+                        <label class="form-label small fw-semibold text-secondary">Rol</label>
+                        <select name="rolId" class="form-select bg-light" asp-items="ViewBag.FiltroRolId">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-3">
+                        <label class="form-label small fw-semibold text-secondary">Estado</label>
+                        <select name="estado" class="form-select bg-light" asp-items="ViewBag.FiltroEstado">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label small fw-semibold text-secondary">Registro desde</label>
+                        <input type="date" name="fechaDesde" value="@ViewBag.FiltroDesde" class="form-control bg-light" />
+                    </div>
+
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label small fw-semibold text-secondary">Registro hasta</label>
+                        <input type="date" name="fechaHasta" value="@ViewBag.FiltroHasta" class="form-control bg-light" />
+                    </div>
+
+                    <div class="col-lg-1 col-md-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100" title="Filtrar">
+                            <i class="bi bi-funnel-fill"></i>
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100" title="Limpiar filtros">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-</form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombres)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Apellidos)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Dni)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefono)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaNacimiento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CodigoMembresia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaRegistro)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rol)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombres)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apellidos)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Dni)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaNacimiento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CodigoMembresia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaRegistro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rol.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.UsuarioId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.UsuarioId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.UsuarioId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <!-- TABLA DE USUARIOS -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-3">@Html.DisplayNameFor(model => model.Nombres)</th>
+                            <th>@Html.DisplayNameFor(model => model.Apellidos)</th>
+                            <th>@Html.DisplayNameFor(model => model.Dni)</th>
+                            <th>@Html.DisplayNameFor(model => model.Email)</th>
+                            <th>@Html.DisplayNameFor(model => model.Telefono)</th>
+                            <th>@Html.DisplayNameFor(model => model.FechaNacimiento)</th>
+                            <th>@Html.DisplayNameFor(model => model.CodigoMembresia)</th>
+                            <th>@Html.DisplayNameFor(model => model.FechaRegistro)</th>
+                            <th>@Html.DisplayNameFor(model => model.Estado)</th>
+                            <th>@Html.DisplayNameFor(model => model.Rol)</th>
+                            <th class="text-end pe-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        @foreach (var item in Model) {
+                            <tr>
+                                <td class="ps-3 fw-medium">
+                                    @Html.DisplayFor(modelItem => item.Nombres)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Apellidos)
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @Html.DisplayFor(modelItem => item.Dni)
+                                    </span>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Telefono)
+                                </td>
+                                <td class="text-nowrap">
+                                    @Html.DisplayFor(modelItem => item.FechaNacimiento)
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                        @Html.DisplayFor(modelItem => item.CodigoMembresia)
+                                    </span>
+                                </td>
+                                <td class="text-nowrap">
+                                    @Html.DisplayFor(modelItem => item.FechaRegistro)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Estado)
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary fw-semibold">
+                                        @Html.DisplayFor(modelItem => item.Rol.Nombre)
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.UsuarioId" class="btn btn-outline-primary" title="Editar">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.UsuarioId" class="btn btn-outline-info" title="Detalles">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.UsuarioId" class="btn btn-outline-danger" title="Eliminar">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,72 +1,91 @@
 @model GymMax.Models.Suscripcion
+@using GymMax.Enums
+@{ ViewData["Title"] = "Nueva Suscripción"; }
 
-@{
-    ViewData["Title"] = "Create";
-}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark m-0">Nueva Suscripción</h2>
+        <p class="text-muted small m-0">Registra una nueva membresía para un cliente.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i><span>Volver</span>
+    </a>
+</div>
 
-<h1>Create</h1>
-
-<h4>Suscripcion</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="card border-0 shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
 
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <input asp-for="UsuarioId" class="form-control" />
-                <span asp-validation-for="UsuarioId" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="PlanId" class="control-label"></label>
-                <input asp-for="PlanId" class="form-control" />
-                <span asp-validation-for="PlanId" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="UsuarioId" class="form-label fw-semibold">Cliente</label>
+                <select asp-for="UsuarioId" class="form-select" asp-items="ViewBag.UsuarioId">
+                    <option value="">— Selecciona un cliente —</option>
+                </select>
+                <span asp-validation-for="UsuarioId" class="text-danger small"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="PrecioPactado" class="control-label"></label>
-                <input asp-for="PrecioPactado" class="form-control" />
-                <span asp-validation-for="PrecioPactado" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="PlanId" class="form-label fw-semibold">Plan</label>
+                <select asp-for="PlanId" class="form-select" asp-items="ViewBag.PlanId" id="selectPlan">
+                    <option value="">— Selecciona un plan —</option>
+                </select>
+                <span asp-validation-for="PlanId" class="text-danger small"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="FechaInicio" class="control-label"></label>
-                <input asp-for="FechaInicio" class="form-control" />
-                <span asp-validation-for="FechaInicio" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="PrecioPactado" class="form-label fw-semibold">
+                    Precio Pactado
+                    <small class="text-muted fw-normal">(se rellena automáticamente, puedes editarlo)</small>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">S/</span>
+                    <input asp-for="PrecioPactado" class="form-control" type="number" step="0.01" min="0" id="inputPrecio" />
+                </div>
+                <span asp-validation-for="PrecioPactado" class="text-danger small"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="FechaFin" class="control-label"></label>
-                <input asp-for="FechaFin" class="form-control" />
-                <span asp-validation-for="FechaFin" class="text-danger"></span>
+            <div class="row g-3 mb-3">
+                <div class="col">
+                    <label asp-for="FechaInicio" class="form-label fw-semibold"></label>
+                    <input asp-for="FechaInicio" class="form-control" type="date" />
+                    <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="FechaFin" class="form-label fw-semibold"></label>
+                    <input asp-for="FechaFin" class="form-control" type="date" />
+                    <span asp-validation-for="FechaFin" class="text-danger small"></span>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+            <div class="mb-4">
+                <label asp-for="Estado" class="form-label fw-semibold"></label>
+                <select asp-for="Estado" class="form-select"
+                    asp-items="Html.GetEnumSelectList<EstadoSuscripcion>()"></select>
+                <span asp-validation-for="Estado" class="text-danger small"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Usuario" class="control-label"></label>
-                <input asp-for="Usuario" class="form-control" />
-                <span asp-validation-for="Usuario" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Plan" class="control-label"></label>
-                <input asp-for="Plan" class="form-control" />
-                <span asp-validation-for="Plan" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+            <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-floppy-fill"></i><span>Guardar</span>
+            </button>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Mapa de PlanId → Precio cargado desde el servidor
+        const precios = @Html.Raw(ViewBag.PlanesJson ?? "{}");
+
+        document.getElementById('selectPlan').addEventListener('change', function () {
+            const planId = this.value;
+            const inputPrecio = document.getElementById('inputPrecio');
+            if (planId && precios[planId] !== undefined) {
+                inputPrecio.value = precios[planId];
+            } else {
+                inputPrecio.value = '';
+            }
+        });
+    </script>
+}

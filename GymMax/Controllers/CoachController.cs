@@ -1,9 +1,11 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
 using GymMax.Data;
 
+[Authorize(Roles = "Administrador")]
 public class CoachController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,7 +18,10 @@ public class CoachController : Controller
     // GET: COACHS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Coaches.ToListAsync());
+        return View(await _context.Coaches
+            .Include(c => c.Usuario)
+            .Include(c => c.Sede)
+            .ToListAsync());
     }
 
     // GET: COACHS/Details/5
@@ -28,6 +33,8 @@ public class CoachController : Controller
         }
 
         var coach = await _context.Coaches
+            .Include(c => c.Usuario)
+            .Include(c => c.Sede)
             .FirstOrDefaultAsync(m => m.CoachId == id);
         if (coach == null)
         {
@@ -67,46 +74,66 @@ public class CoachController : Controller
             return NotFound();
         }
 
-        var coach = await _context.Coaches.FindAsync(id);
+        var coach = await _context.Coaches
+            .Include(c => c.Usuario)
+            .FirstOrDefaultAsync(m => m.CoachId == id);
         if (coach == null)
         {
             return NotFound();
         }
+
+        // Cargar sedes para el select — formato "ID — Nombre" para mayor guía
+        ViewBag.SedeId = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(
+            _context.Sedes.Select(s => new { Value = s.SedeId, Text = $"{s.SedeId} — {s.Nombre}" }),
+            "Value", "Text", coach.SedeId);
+
         return View(coach);
     }
 
     // POST: COACHS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("CoachId,UsuarioId,SedeId,FechaIngreso,Activo,Usuario,Sede")] Coach coach)
+    public async Task<IActionResult> Edit(int id, [Bind("CoachId,SedeId,FechaIngreso,Activo")] Coach coach)
     {
         if (id != coach.CoachId)
         {
             return NotFound();
         }
 
+        // Ignoramos validaciones de propiedades que no se editan aquí
+        ModelState.Remove("UsuarioId");
+        ModelState.Remove("Usuario");
+
         if (ModelState.IsValid)
         {
             try
             {
-                _context.Update(coach);
+                var coachDb = await _context.Coaches.FindAsync(id);
+                if (coachDb == null)
+                {
+                    return NotFound();
+                }
+
+                coachDb.SedeId       = coach.SedeId;
+                coachDb.FechaIngreso = coach.FechaIngreso;
+                coachDb.Activo       = coach.Activo;
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!CoachExists(coach.CoachId))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
             return RedirectToAction(nameof(Index));
         }
+
+        ViewBag.SedeId = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(
+            _context.Sedes.Select(s => new { Value = s.SedeId, Text = $"{s.SedeId} — {s.Nombre}" }),
+            "Value", "Text", coach.SedeId);
+
         return View(coach);
     }
 
@@ -119,6 +146,8 @@ public class CoachController : Controller
         }
 
         var coach = await _context.Coaches
+            .Include(c => c.Usuario)
+            .Include(c => c.Sede)
             .FirstOrDefaultAsync(m => m.CoachId == id);
         if (coach == null)
         {

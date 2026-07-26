@@ -1,54 +1,52 @@
 @model GymMax.Models.Sede
+@{ ViewData["Title"] = "Editar Sede"; }
 
-@{
-    ViewData["Title"] = "Edit";
-}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark m-0">Editar Sede</h2>
+        <p class="text-muted small m-0">Modifica los datos de la sede seleccionada.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i><span>Volver</span>
+    </a>
+</div>
 
-<h1>Edit</h1>
-
-<h4>Sede</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="card border-0 shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
             <input type="hidden" asp-for="SedeId" />
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label fw-semibold"></label>
                 <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+                <span asp-validation-for="Nombre" class="text-danger small"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Direccion" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Direccion" class="form-label fw-semibold"></label>
                 <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
+                <span asp-validation-for="Direccion" class="text-danger small"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
+            <div class="row g-3 mb-3">
+                <div class="col">
+                    <label asp-for="Telefono" class="form-label fw-semibold"></label>
+                    <input asp-for="Telefono" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="Horario" class="form-label fw-semibold"></label>
+                    <input asp-for="Horario" class="form-control" placeholder="Ej: 6am - 10pm" />
+                    <span asp-validation-for="Horario" class="text-danger small"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Horario" class="control-label"></label>
-                <input asp-for="Horario" class="form-control" />
-                <span asp-validation-for="Horario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Activo" class="control-label"></label>
+            <div class="mb-4 form-check">
                 <input asp-for="Activo" class="form-check-input" />
-                <span asp-validation-for="Activo" class="text-danger"></span>
+                <label asp-for="Activo" class="form-check-label fw-semibold"></label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+            <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-floppy-fill"></i><span>Guardar cambios</span>
+            </button>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

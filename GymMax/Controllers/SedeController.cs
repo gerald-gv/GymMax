@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
 using GymMax.Data;
 
+[Authorize(Roles = "Administrador")]
 public class SedeController : Controller
 {
     private readonly AppDbContext _context;

@@ -1,9 +1,11 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
 using GymMax.Data;
 
+[Authorize(Roles = "Administrador")]
 public class AsistenciaController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,7 +18,10 @@ public class AsistenciaController : Controller
     // GET: ASISTENCIAS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Asistencias.ToListAsync());
+        return View(await _context.Asistencias
+            .Include(a => a.Usuario)
+            .Include(a => a.Sede)
+            .ToListAsync());
     }
 
     // GET: ASISTENCIAS/Details/5
@@ -28,6 +33,8 @@ public class AsistenciaController : Controller
         }
 
         var asistencia = await _context.Asistencias
+            .Include(a => a.Usuario)
+            .Include(a => a.Sede)
             .FirstOrDefaultAsync(m => m.AsistenciaId == id);
         if (asistencia == null)
         {
@@ -119,6 +126,8 @@ public class AsistenciaController : Controller
         }
 
         var asistencia = await _context.Asistencias
+            .Include(a => a.Usuario)
+            .Include(a => a.Sede)
             .FirstOrDefaultAsync(m => m.AsistenciaId == id);
         if (asistencia == null)
         {
