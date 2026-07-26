@@ -1,14 +1,49 @@
 @model IEnumerable<GymMax.Domain.Entities.Usuario>
+@using GymMax.Enums
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Usuarios</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Crear Nuevo Usuario</a>
 </p>
+
+<form method="get" asp-action="Index" class="mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Nombre o apellido</label>
+            <input type="text" name="nombre" value="@ViewBag.FiltroNombre" class="form-control" placeholder="Buscar..." />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Rol</label>
+            <select name="rolId" class="form-select" asp-items="ViewBag.FiltroRolId">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Estado</label>
+            <select name="estado" class="form-select" asp-items="ViewBag.FiltroEstado">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Registro desde</label>
+            <input type="date" name="fechaDesde" value="@ViewBag.FiltroDesde" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Registro hasta</label>
+            <input type="date" name="fechaHasta" value="@ViewBag.FiltroHasta" class="form-control" />
+        </div>
+        <div class="col-md-1 d-flex gap-1">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+        </div>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -29,9 +64,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FechaNacimiento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PasswordHash)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CodigoMembresia)
@@ -68,9 +100,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FechaNacimiento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PasswordHash)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CodigoMembresia)

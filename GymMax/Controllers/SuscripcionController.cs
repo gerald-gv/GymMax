@@ -4,22 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
 using GymMax.Data;
 
-public class PlanController : Controller
+public class SuscripcionController : Controller
 {
     private readonly AppDbContext _context;
 
-    public PlanController(AppDbContext context)
+    public SuscripcionController(AppDbContext context)
     {
         _context = context;
     }
 
-    // GET: PLANS
+    // GET: SUSCRIPCIONS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Planes.ToListAsync());
+        return View(await _context.Suscripciones.ToListAsync());
     }
 
-    // GET: PLANS/Details/5
+    // GET: SUSCRIPCIONS/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -27,39 +27,39 @@ public class PlanController : Controller
             return NotFound();
         }
 
-        var plan = await _context.Planes
-            .FirstOrDefaultAsync(m => m.PlanId == id);
-        if (plan == null)
+        var suscripcion = await _context.Suscripciones
+            .FirstOrDefaultAsync(m => m.SuscripcionId == id);
+        if (suscripcion == null)
         {
             return NotFound();
         }
 
-        return View(plan);
+        return View(suscripcion);
     }
 
-    // GET: PLANS/Create
+    // GET: SUSCRIPCIONS/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: PLANS/Create
+    // POST: SUSCRIPCIONS/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan)
+    public async Task<IActionResult> Create([Bind("SuscripcionId,UsuarioId,PlanId,PrecioPactado,FechaInicio,FechaFin,Estado,Usuario,Plan")] Suscripcion suscripcion)
     {
         if (ModelState.IsValid)
         {
-            _context.Add(plan);
+            _context.Add(suscripcion);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(plan);
+        return View(suscripcion);
     }
 
-    // GET: PLANS/Edit/5
+    // GET: SUSCRIPCIONS/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -67,22 +67,22 @@ public class PlanController : Controller
             return NotFound();
         }
 
-        var plan = await _context.Planes.FindAsync(id);
-        if (plan == null)
+        var suscripcion = await _context.Suscripciones.FindAsync(id);
+        if (suscripcion == null)
         {
             return NotFound();
         }
-        return View(plan);
+        return View(suscripcion);
     }
 
-    // POST: PLANS/Edit/5
+    // POST: SUSCRIPCIONS/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan)
+    public async Task<IActionResult> Edit(int id, [Bind("SuscripcionId,UsuarioId,PlanId,PrecioPactado,FechaInicio,FechaFin,Estado,Usuario,Plan")] Suscripcion suscripcion)
     {
-        if (id != plan.PlanId)
+        if (id != suscripcion.SuscripcionId)
         {
             return NotFound();
         }
@@ -91,12 +91,12 @@ public class PlanController : Controller
         {
             try
             {
-                _context.Update(plan);
+                _context.Update(suscripcion);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PlanExists(plan.PlanId))
+                if (!SuscripcionExists(suscripcion.SuscripcionId))
                 {
                     return NotFound();
                 }
@@ -107,10 +107,10 @@ public class PlanController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(plan);
+        return View(suscripcion);
     }
 
-    // GET: PLANS/Delete/5
+    // GET: SUSCRIPCIONS/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -118,33 +118,33 @@ public class PlanController : Controller
             return NotFound();
         }
 
-        var plan = await _context.Planes
-            .FirstOrDefaultAsync(m => m.PlanId == id);
-        if (plan == null)
+        var suscripcion = await _context.Suscripciones
+            .FirstOrDefaultAsync(m => m.SuscripcionId == id);
+        if (suscripcion == null)
         {
             return NotFound();
         }
 
-        return View(plan);
+        return View(suscripcion);
     }
 
-    // POST: PLANS/Delete/5
+    // POST: SUSCRIPCIONS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var plan = await _context.Planes.FindAsync(id);
-        if (plan != null)
+        var suscripcion = await _context.Suscripciones.FindAsync(id);
+        if (suscripcion != null)
         {
-            _context.Planes.Remove(plan);
+            _context.Suscripciones.Remove(suscripcion);
         }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool PlanExists(int id)
+    private bool SuscripcionExists(int id)
     {
-        return _context.Planes.Any(e => e.PlanId == id);
+        return _context.Suscripciones.Any(e => e.SuscripcionId == id);
     }
 }

@@ -4,22 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
 using GymMax.Data;
 
-public class PlanController : Controller
+public class SedeController : Controller
 {
     private readonly AppDbContext _context;
 
-    public PlanController(AppDbContext context)
+    public SedeController(AppDbContext context)
     {
         _context = context;
     }
 
-    // GET: PLANS
+    // GET: SEDES
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Planes.ToListAsync());
+        return View(await _context.Sedes.ToListAsync());
     }
 
-    // GET: PLANS/Details/5
+    // GET: SEDES/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -27,39 +27,39 @@ public class PlanController : Controller
             return NotFound();
         }
 
-        var plan = await _context.Planes
-            .FirstOrDefaultAsync(m => m.PlanId == id);
-        if (plan == null)
+        var sede = await _context.Sedes
+            .FirstOrDefaultAsync(m => m.SedeId == id);
+        if (sede == null)
         {
             return NotFound();
         }
 
-        return View(plan);
+        return View(sede);
     }
 
-    // GET: PLANS/Create
+    // GET: SEDES/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: PLANS/Create
+    // POST: SEDES/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan)
+    public async Task<IActionResult> Create([Bind("SedeId,Nombre,Direccion,Telefono,Horario,Activo")] Sede sede)
     {
         if (ModelState.IsValid)
         {
-            _context.Add(plan);
+            _context.Add(sede);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(plan);
+        return View(sede);
     }
 
-    // GET: PLANS/Edit/5
+    // GET: SEDES/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -67,22 +67,22 @@ public class PlanController : Controller
             return NotFound();
         }
 
-        var plan = await _context.Planes.FindAsync(id);
-        if (plan == null)
+        var sede = await _context.Sedes.FindAsync(id);
+        if (sede == null)
         {
             return NotFound();
         }
-        return View(plan);
+        return View(sede);
     }
 
-    // POST: PLANS/Edit/5
+    // POST: SEDES/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan)
+    public async Task<IActionResult> Edit(int id, [Bind("SedeId,Nombre,Direccion,Telefono,Horario,Activo")] Sede sede)
     {
-        if (id != plan.PlanId)
+        if (id != sede.SedeId)
         {
             return NotFound();
         }
@@ -91,12 +91,12 @@ public class PlanController : Controller
         {
             try
             {
-                _context.Update(plan);
+                _context.Update(sede);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PlanExists(plan.PlanId))
+                if (!SedeExists(sede.SedeId))
                 {
                     return NotFound();
                 }
@@ -107,10 +107,10 @@ public class PlanController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(plan);
+        return View(sede);
     }
 
-    // GET: PLANS/Delete/5
+    // GET: SEDES/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -118,33 +118,33 @@ public class PlanController : Controller
             return NotFound();
         }
 
-        var plan = await _context.Planes
-            .FirstOrDefaultAsync(m => m.PlanId == id);
-        if (plan == null)
+        var sede = await _context.Sedes
+            .FirstOrDefaultAsync(m => m.SedeId == id);
+        if (sede == null)
         {
             return NotFound();
         }
 
-        return View(plan);
+        return View(sede);
     }
 
-    // POST: PLANS/Delete/5
+    // POST: SEDES/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var plan = await _context.Planes.FindAsync(id);
-        if (plan != null)
+        var sede = await _context.Sedes.FindAsync(id);
+        if (sede != null)
         {
-            _context.Planes.Remove(plan);
+            _context.Sedes.Remove(sede);
         }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool PlanExists(int id)
+    private bool SedeExists(int id)
     {
-        return _context.Planes.Any(e => e.PlanId == id);
+        return _context.Sedes.Any(e => e.SedeId == id);
     }
 }

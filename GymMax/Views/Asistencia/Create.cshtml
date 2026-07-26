@@ -1,0 +1,54 @@
+@model GymMax.Models.Asistencia
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Asistencia</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="UsuarioId" class="control-label"></label>
+                <input asp-for="UsuarioId" class="form-control" />
+                <span asp-validation-for="UsuarioId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SedeId" class="control-label"></label>
+                <input asp-for="SedeId" class="form-control" />
+                <span asp-validation-for="SedeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FechaHoraEntrada" class="control-label"></label>
+                <input asp-for="FechaHoraEntrada" class="form-control" />
+                <span asp-validation-for="FechaHoraEntrada" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Usuario" class="control-label"></label>
+                <input asp-for="Usuario" class="form-control" />
+                <span asp-validation-for="Usuario" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Sede" class="control-label"></label>
+                <input asp-for="Sede" class="form-control" />
+                <span asp-validation-for="Sede" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,48 @@
+@model IEnumerable<GymMax.Models.Pago>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SuscripcionId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Monto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaPago)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Suscripcion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.SuscripcionId)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Monto)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.FechaPago)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Suscripcion)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.PagoId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PagoId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
