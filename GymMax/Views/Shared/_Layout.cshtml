@@ -3,24 +3,149 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - GymMax</title>
-    <script type="importmap"></script>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GymMax.styles.css" asp-append-version="true" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 </head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
 
-    <partial name="_Navbar" />
+<body>
 
-    <main class="flex-grow">
-        @RenderBody()
-    </main>
+    <div class="d-flex">
 
-    <partial name="_Footer" />
+        <!-- SIDEBAR -->
+        <aside class="bg-dark text-white p-3 vh-100" style="width:250px;">
 
+            <h3 class="text-center mb-4">
+                GymMax
+            </h3>
+
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        🏠 Dashboard
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Usuarios"
+                       asp-action="Index">
+                        👥 Usuarios
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Plan"
+                       asp-action="Index">
+                        📋 Planes
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Sede"
+                       asp-action="Index">
+                        🏢 Sedes
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Coach"
+                       asp-action="Index">
+                        🏋 Coaches
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Suscripcion"
+                       asp-action="Index">
+                        💳 Suscripciones
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Pago"
+                       asp-action="Index">
+                        💰 Pagos
+                    </a>
+                </li>
+
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Asistencia"
+                       asp-action="Index">
+                        📅 Asistencias
+                    </a>
+                </li>
+
+            </ul>
+
+        </aside>
+
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="flex-grow-1">
+
+
+            <!-- HEADER SUPERIOR -->
+            <header class="border-bottom p-3 bg-light">
+
+                <div class="d-flex justify-content-between">
+
+                    <h4>
+                        @ViewData["Title"]
+                    </h4>
+
+
+                    <div>
+                        Administrador
+                    </div>
+
+                </div>
+
+            </header>
+
+
+
+            <!-- VISTAS CRUD -->
+            <main class="p-4">
+
+                @RenderBody()
+
+            </main>
+
+
+
+            <!-- FOOTER -->
+            <footer class="border-top text-muted p-3">
+
+                &copy; 2026 - GymMax
+
+            </footer>
+
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

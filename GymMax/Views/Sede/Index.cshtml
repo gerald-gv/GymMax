@@ -1,82 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Nuestras Sedes";
+@model IEnumerable<GymMax.Models.Sede>
+
+@{
+    ViewData["Title"] = "Index";
 }
 
-<section class="bg-gray-900 text-white py-20">
+<h1>Index</h1>
 
-    <div class="max-w-7xl mx-auto px-6 text-center">
-
-        <h1 class="text-5xl font-bold">
-
-            Nuestras Sedes
-
-        </h1>
-
-        <p class="mt-5 text-gray-300">
-
-            Encuentra el gimnasio GymMax más cercano y comienza a entrenar.
-
-        </p>
-
-    </div>
-
-</section>
-
-<section class="py-20 bg-gray-100">
-
-    <div class="max-w-7xl mx-auto px-6 space-y-10">
-
-        @for (int i = 1; i <= 3; i++)
-        {
-            <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col lg:flex-row justify-between items-center gap-8">
-
-                <div>
-
-                    <h2 class="text-3xl font-bold">
-
-                        GymMax Sede @i
-
-                    </h2>
-
-                    <p class="mt-4 text-gray-600">
-
-                        <i class="fa-solid fa-location-dot text-red-600"></i>
-
-                        Av. Principal 123
-
-                    </p>
-
-                    <p class="mt-2 text-gray-600">
-
-                        <i class="fa-solid fa-phone text-red-600"></i>
-
-                        999 999 999
-
-                    </p>
-
-                    <p class="mt-2 text-gray-600">
-
-                        <i class="fa-solid fa-clock text-red-600"></i>
-
-                        Lunes - Sábado | 6:00 AM - 10:00 PM
-
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <button class="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700">
-
-                        Ver ubicación
-
-                    </button>
-
-                </div>
-
-            </div>
-        }
-
-    </div>
-
-</section>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telefono)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Horario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Activo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Direccion)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Telefono)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Horario)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Activo)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.SedeId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.SedeId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.SedeId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
