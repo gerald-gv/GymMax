@@ -2,6 +2,7 @@ using GymMax.Data;
 using GymMax.Domain.Entities;
 using GymMax.Enums;
 using GymMax.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymMax.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class UsuariosController : Controller
     {
         private readonly AppDbContext _context;
@@ -102,7 +104,8 @@ namespace GymMax.Controllers
                     {
                         Usuario = usuario,
                         FechaIngreso = DateOnly.FromDateTime(DateTime.Now),
-                        Activo = true
+                        // Activo refleja el estado del usuario: Activo=1 → true, Inactivo=2 → false
+                        Activo = usuario.Estado == EstadoUsuario.Activo
                     };
                     _context.Coaches.Add(coach);
                 }

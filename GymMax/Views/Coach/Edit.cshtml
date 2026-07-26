@@ -1,59 +1,49 @@
 @model GymMax.Models.Coach
+@{ ViewData["Title"] = "Editar Coach"; }
 
-@{
-    ViewData["Title"] = "Edit";
-}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark m-0">Editar Coach</h2>
+        <p class="text-muted small m-0">Modifica los datos del coach seleccionado.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i><span>Volver</span>
+    </a>
+</div>
 
-<h1>Edit</h1>
-
-<h4>Coach</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="card border-0 shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
             <input type="hidden" asp-for="CoachId" />
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <input asp-for="UsuarioId" class="form-control" />
-                <span asp-validation-for="UsuarioId" class="text-danger"></span>
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-secondary small text-uppercase">Coach</label>
+                <p class="form-control-plaintext fw-medium">
+                    <i class="bi bi-person-badge-fill text-primary me-1"></i>
+                    @Model.Usuario?.Nombres @Model.Usuario?.Apellidos
+                </p>
             </div>
-            <div class="form-group">
-                <label asp-for="SedeId" class="control-label"></label>
-                <input asp-for="SedeId" class="form-control" />
-                <span asp-validation-for="SedeId" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="SedeId" class="form-label fw-semibold"></label>
+                <select asp-for="SedeId" class="form-select" asp-items="ViewBag.SedeId">
+                    <option value="">— Sin sede asignada —</option>
+                </select>
+                <span asp-validation-for="SedeId" class="text-danger small"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="FechaIngreso" class="control-label"></label>
-                <input asp-for="FechaIngreso" class="form-control" />
-                <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="FechaIngreso" class="form-label fw-semibold"></label>
+                <input asp-for="FechaIngreso" class="form-control" type="date" />
+                <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Activo" class="control-label"></label>
+            <div class="mb-4 form-check">
                 <input asp-for="Activo" class="form-check-input" />
-                <span asp-validation-for="Activo" class="text-danger"></span>
+                <label asp-for="Activo" class="form-check-label fw-semibold"></label>
             </div>
-            <div class="form-group">
-                <label asp-for="Usuario" class="control-label"></label>
-                <input asp-for="Usuario" class="form-control" />
-                <span asp-validation-for="Usuario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sede" class="control-label"></label>
-                <input asp-for="Sede" class="form-control" />
-                <span asp-validation-for="Sede" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+            <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-floppy-fill"></i><span>Guardar cambios</span>
+            </button>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

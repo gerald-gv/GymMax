@@ -1,9 +1,11 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
 using GymMax.Data;
 
+[Authorize(Roles = "Administrador")]
 public class PagoController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,7 +18,10 @@ public class PagoController : Controller
     // GET: PAGOS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Pagos.ToListAsync());
+        return View(await _context.Pagos
+            .Include(p => p.Suscripcion).ThenInclude(s => s.Usuario)
+            .Include(p => p.Suscripcion).ThenInclude(s => s.Plan)
+            .ToListAsync());
     }
 
     // GET: PAGOS/Details/5
@@ -28,6 +33,8 @@ public class PagoController : Controller
         }
 
         var pago = await _context.Pagos
+            .Include(p => p.Suscripcion).ThenInclude(s => s.Usuario)
+            .Include(p => p.Suscripcion).ThenInclude(s => s.Plan)
             .FirstOrDefaultAsync(m => m.PagoId == id);
         if (pago == null)
         {
@@ -119,6 +126,8 @@ public class PagoController : Controller
         }
 
         var pago = await _context.Pagos
+            .Include(p => p.Suscripcion).ThenInclude(s => s.Usuario)
+            .Include(p => p.Suscripcion).ThenInclude(s => s.Plan)
             .FirstOrDefaultAsync(m => m.PagoId == id);
         if (pago == null)
         {

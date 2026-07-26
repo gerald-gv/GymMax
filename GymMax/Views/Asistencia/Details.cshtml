@@ -1,52 +1,35 @@
 @model GymMax.Models.Asistencia
+@{ ViewData["Title"] = "Detalle de Asistencia"; }
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<h1>Details</h1>
-
-<div>
-    <h4>Asistencia</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UsuarioId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UsuarioId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SedeId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SedeId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaHoraEntrada)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaHoraEntrada)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Usuario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Usuario)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sede)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sede)
-        </dd>
-    </dl>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark m-0">Detalle de Asistencia</h2>
+        <p class="text-muted small m-0">Información del registro de entrada.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i><span>Volver</span>
+    </a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AsistenciaId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="card border-0 shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-secondary small text-uppercase">Usuario</dt>
+            <dd class="col-sm-8 fw-semibold">@Model.Usuario?.Nombres @Model.Usuario?.Apellidos</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">Email</dt>
+            <dd class="col-sm-8">@Model.Usuario?.Email</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">Sede</dt>
+            <dd class="col-sm-8">@(Model.Sede?.Nombre ?? "—")</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.FechaHoraEntrada)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.FechaHoraEntrada)</dd>
+        </dl>
+    </div>
+    <div class="card-footer bg-transparent d-flex gap-2">
+        <a asp-action="Delete" asp-route-id="@Model.AsistenciaId" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1">
+            <i class="bi bi-trash-fill"></i> Eliminar
+        </a>
+    </div>
 </div>

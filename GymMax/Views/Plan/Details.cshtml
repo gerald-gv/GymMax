@@ -1,52 +1,47 @@
 @model GymMax.Models.Plan
+@{ ViewData["Title"] = "Detalle del Plan"; }
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<h1>Details</h1>
-
-<div>
-    <h4>Plan</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DuracionDias)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DuracionDias)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Precio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Precio)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Activo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Activo)
-        </dd>
-    </dl>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark m-0">Detalle del Plan</h2>
+        <p class="text-muted small m-0">Información completa del plan seleccionado.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i><span>Volver</span>
+    </a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PlanId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="card border-0 shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.Nombre)</dt>
+            <dd class="col-sm-8 fw-semibold">@Html.DisplayFor(m => m.Nombre)</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.Descripcion)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Descripcion)</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.DuracionDias)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.DuracionDias) días</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.Precio)</dt>
+            <dd class="col-sm-8 fw-semibold">S/ @Html.DisplayFor(m => m.Precio)</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.Activo)</dt>
+            <dd class="col-sm-8">
+                @if (Model.Activo) {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Activo</span>
+                } else {
+                    <span class="badge bg-secondary-subtle text-secondary border">Inactivo</span>
+                }
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer bg-transparent d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.PlanId" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
+            <i class="bi bi-pencil-fill"></i> Editar
+        </a>
+        <a asp-action="Delete" asp-route-id="@Model.PlanId" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1">
+            <i class="bi bi-trash-fill"></i> Eliminar
+        </a>
+    </div>
 </div>

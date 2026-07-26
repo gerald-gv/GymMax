@@ -1,45 +1,37 @@
 @model GymMax.Models.Pago
+@{ ViewData["Title"] = "Detalle de Pago"; }
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<h1>Details</h1>
-
-<div>
-    <h4>Pago</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SuscripcionId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SuscripcionId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Monto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Monto)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaPago)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaPago)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Suscripcion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Suscripcion)
-        </dd>
-    </dl>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark m-0">Detalle de Pago</h2>
+        <p class="text-muted small m-0">Información completa del pago registrado.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i><span>Volver</span>
+    </a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PagoId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="card border-0 shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-secondary small text-uppercase">Cliente</dt>
+            <dd class="col-sm-8 fw-semibold">
+                @Model.Suscripcion?.Usuario?.Nombres @Model.Suscripcion?.Usuario?.Apellidos
+            </dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">Plan</dt>
+            <dd class="col-sm-8">@Model.Suscripcion?.Plan?.Nombre</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.Monto)</dt>
+            <dd class="col-sm-8 fw-semibold text-success fs-5">S/ @Model.Monto.ToString("N2")</dd>
+
+            <dt class="col-sm-4 text-secondary small text-uppercase">@Html.DisplayNameFor(m => m.FechaPago)</dt>
+            <dd class="col-sm-8">@Model.FechaPago.ToString("dd/MM/yyyy HH:mm")</dd>
+        </dl>
+    </div>
+    <div class="card-footer bg-transparent d-flex gap-2">
+        <a asp-action="Delete" asp-route-id="@Model.PagoId" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1">
+            <i class="bi bi-trash-fill"></i> Eliminar
+        </a>
+    </div>
 </div>
