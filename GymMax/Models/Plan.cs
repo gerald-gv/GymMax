@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymMax.Models {
+    [Table ("Planes")]
     public class Plan {
         
         [Key]
