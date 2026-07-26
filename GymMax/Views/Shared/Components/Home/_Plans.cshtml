@@ -1,248 +1,91 @@
 ﻿<section id="planes" class="py-24 bg-gray-100">
 
+    <div class="max-w-7xl mx-auto px-6">
 
-	<div class="max-w-7xl mx-auto px-6">
+        <div class="text-center">
 
+            <h2 class="text-4xl font-bold text-gray-900">
+                Planes diseñados para ti
+            </h2>
 
-		<div class="text-center">
+            <p class="mt-4 text-gray-500">
+                Elige el entrenamiento que mejor se adapte a tus objetivos.
+            </p>
 
-			<h2 class="text-4xl font-bold text-gray-900">
-				Planes diseñados para ti
-			</h2>
+        </div>
 
 
-			<p class="mt-4 text-gray-500">
-				Elige el entrenamiento que mejor se adapte a tus objetivos.
-			</p>
+        <div class="grid md:grid-cols-3 gap-8 mt-16">
 
+            @foreach (var plan in Model.Planes) {
+                <div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-200 hover:-translate-y-3 hover:shadow-2xl transition duration-500">
 
-		</div>
+                    <h3 class="text-2xl font-bold">
+                        @plan.Nombre
+                    </h3>
 
+                    <p class="text-gray-500 mt-2">
+                        @plan.Descripcion
+                    </p>
 
 
-		<div class="grid md:grid-cols-3 gap-8 mt-16">
+                    <div class="mt-6">
 
+                        <span class="text-5xl font-extrabold">
+                            S/@plan.Precio.ToString("0.00")
+                        </span>
 
-			<!-- PLAN BASICO -->
+                    </div>
 
-			<div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-200 hover:-translate-y-3 hover:shadow-2xl transition duration-500">
 
+                    <ul class="mt-8 space-y-4 text-gray-600">
 
-				<h3 class="text-2xl font-bold">
-					Básico
-				</h3>
+                        <li>
+                            <i class="fa-solid fa-check text-red-500 mr-2"></i>
+                            @plan.Descripcion
+                        </li>
 
+                        <li>
+                            <i class="fa-solid fa-calendar text-red-500 mr-2"></i>
+                            Duración: @plan.DuracionDias días
+                        </li>
 
-				<p class="text-gray-500 mt-2">
-					Para comenzar tu transformación.
-				</p>
+                        <li>
+                            <i class="fa-solid fa-circle-check text-red-500 mr-2"></i>
+                            Plan disponible
+                        </li>
 
+                    </ul>
 
-				<div class="mt-6">
 
-					<span class="text-5xl font-extrabold">
-						S/49
-					</span>
+                    <a asp-controller="Planes"
+                           asp-action="Index"
+                           class="mt-10 block w-full py-3 text-center rounded-xl border border-red-500 text-red-600 hover:bg-red-600 hover:text-white transition">
 
-					<span class="text-gray-500">
-						/mes
-					</span>
+                        Ver planes
 
-				</div>
+                    </a>
 
+                </div>
+            }
 
+        </div>
 
-				<ul class="mt-8 space-y-4 text-gray-600">
 
+        <div class="text-center mt-12">
 
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Acceso al gimnasio
-					</li>
+            <a asp-controller="Planes"
+                   asp-action="Index"
+                   class="inline-flex items-center gap-2 text-red-600 font-semibold hover:text-red-700 transition">
 
+                Ver todos los planes
 
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Zona de máquinas
-					</li>
+                <i class="fa-solid fa-arrow-right"></i>
 
+            </a>
 
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Horario estándar
-					</li>
+        </div>
 
-
-				</ul>
-
-
-
-				<button class="mt-10 w-full py-3 rounded-xl border border-red-500 text-red-600 hover:bg-red-600 hover:text-white transition">
-
-					Elegir plan
-
-				</button>
-
-
-			</div>
-
-
-
-
-
-
-			<!-- PLAN PREMIUM -->
-
-			<div class="relative bg-gray-950 text-white rounded-3xl p-8 shadow-2xl scale-105">
-
-
-				<div class="absolute -top-4 left-1/2 -translate-x-1/2">
-
-					<span class="bg-red-600 px-5 py-2 rounded-full text-sm font-semibold">
-
-						Más popular
-
-					</span>
-
-
-				</div>
-
-
-
-				<h3 class="text-2xl font-bold mt-4">
-					Premium
-				</h3>
-
-
-				<p class="text-gray-400 mt-2">
-					Para resultados más rápidos.
-				</p>
-
-
-
-				<div class="mt-6">
-
-					<span class="text-5xl font-extrabold">
-						S/89
-					</span>
-
-					<span class="text-gray-400">
-						/mes
-					</span>
-
-
-				</div>
-
-
-
-				<ul class="mt-8 space-y-4">
-
-
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Acceso ilimitado
-					</li>
-
-
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Coach personalizado
-					</li>
-
-
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Evaluación mensual
-					</li>
-
-
-				</ul>
-
-
-
-				<button class="mt-10 w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 transition">
-
-					Elegir plan
-
-				</button>
-
-
-			</div>
-
-
-
-
-
-
-
-			<!-- PLAN PRO -->
-
-			<div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-200 hover:-translate-y-3 hover:shadow-2xl transition duration-500">
-
-
-				<h3 class="text-2xl font-bold">
-					Pro
-				</h3>
-
-
-				<p class="text-gray-500 mt-2">
-					Máximo rendimiento.
-				</p>
-
-
-				<div class="mt-6">
-
-					<span class="text-5xl font-extrabold">
-						S/129
-					</span>
-
-					<span class="text-gray-500">
-						/mes
-					</span>
-
-				</div>
-
-
-
-				<ul class="mt-8 space-y-4 text-gray-600">
-
-
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Entrenamiento avanzado
-					</li>
-
-
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Plan nutricional
-					</li>
-
-
-					<li>
-						<i class="fa-solid fa-check text-red-500"></i>
-						Seguimiento personalizado
-					</li>
-
-
-				</ul>
-
-
-				<button class="mt-10 w-full py-3 rounded-xl border border-red-500 text-red-600 hover:bg-red-600 hover:text-white transition">
-
-					Elegir plan
-
-				</button>
-
-
-			</div>
-
-
-
-		</div>
-
-
-	</div>
-
+    </div>
 
 </section>

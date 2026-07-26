@@ -1,0 +1,107 @@
+﻿@model IEnumerable<Plan>
+
+@{
+    ViewData["Title"] = "Planes";
+}
+
+<!-- HERO -->
+<section class="bg-gray-950 text-white py-20">
+
+    <div class="max-w-7xl mx-auto px-6 text-center">
+
+        <h1 class="text-5xl font-bold">
+            Nuestros planes
+        </h1>
+
+        <p class="mt-5 text-gray-400 text-lg">
+            Elige el plan que mejor se adapte a tus objetivos.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- PLANES -->
+<section class="py-24 bg-gray-100">
+
+    <div class="max-w-7xl mx-auto px-6">
+
+        @if (!Model.Any()) {
+            <div class="text-center py-16">
+
+                <i class="fa-solid fa-dumbbell text-5xl text-gray-400"></i>
+
+                <h2 class="mt-5 text-2xl font-bold text-gray-800">
+                    No hay planes disponibles
+                </h2>
+
+                <p class="mt-2 text-gray-500">
+                    Actualmente no tenemos planes activos disponibles.
+                </p>
+
+            </div>
+        } else {
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                @foreach (var plan in Model) {
+                    <div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-200 hover:-translate-y-3 hover:shadow-2xl transition duration-500">
+
+                        <h3 class="text-2xl font-bold">
+                            @plan.Nombre
+                        </h3>
+
+                        <p class="text-gray-500 mt-2">
+                            @plan.Descripcion
+                        </p>
+
+
+                        <div class="mt-6">
+
+                            <span class="text-5xl font-extrabold">
+                                S/@plan.Precio.ToString("0.00")
+                            </span>
+
+                            <span class="text-gray-500">
+                                /@plan.DuracionDias días
+                            </span>
+
+                        </div>
+
+
+                        <ul class="mt-8 space-y-4 text-gray-600">
+
+                            <li>
+                                <i class="fa-solid fa-check text-red-500 mr-2"></i>
+                                @plan.Descripcion
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-calendar text-red-500 mr-2"></i>
+                                Duración de @plan.DuracionDias días
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle-check text-red-500 mr-2"></i>
+                                Plan disponible
+                            </li>
+
+                        </ul>
+
+
+                        <button type="button"
+                                class="mt-10 w-full py-3 rounded-xl border border-red-500 text-red-600 hover:bg-red-600 hover:text-white transition">
+
+                            Elegir plan
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</section>
