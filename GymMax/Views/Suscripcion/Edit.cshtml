@@ -1,9 +1,6 @@
 @model GymMax.Models.Suscripcion
 @using GymMax.Enums
-@{ 
-    ViewData["Title"] = "Editar Suscripción"; 
-    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
-}
+@{ ViewData["Title"] = "Editar Suscripción"; }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -20,26 +17,35 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
             <input type="hidden" asp-for="SuscripcionId" />
-            <div class="row g-3 mb-3">
-                <div class="col">
-                    <label asp-for="UsuarioId" class="form-label fw-semibold"></label>
-                    <input asp-for="UsuarioId" class="form-control" type="number" />
-                    <span asp-validation-for="UsuarioId" class="text-danger small"></span>
-                </div>
-                <div class="col">
-                    <label asp-for="PlanId" class="form-label fw-semibold"></label>
-                    <input asp-for="PlanId" class="form-control" type="number" />
-                    <span asp-validation-for="PlanId" class="text-danger small"></span>
-                </div>
-            </div>
+
             <div class="mb-3">
-                <label asp-for="PrecioPactado" class="form-label fw-semibold"></label>
+                <label asp-for="UsuarioId" class="form-label fw-semibold">Cliente</label>
+                <select asp-for="UsuarioId" class="form-select" asp-items="ViewBag.UsuarioId">
+                    <option value="">— Selecciona un cliente —</option>
+                </select>
+                <span asp-validation-for="UsuarioId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PlanId" class="form-label fw-semibold">Plan</label>
+                <select asp-for="PlanId" class="form-select" asp-items="ViewBag.PlanId" id="selectPlan">
+                    <option value="">— Selecciona un plan —</option>
+                </select>
+                <span asp-validation-for="PlanId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PrecioPactado" class="form-label fw-semibold">
+                    Precio Pactado
+                    <small class="text-muted fw-normal">(puedes editarlo si aplica un precio diferente)</small>
+                </label>
                 <div class="input-group">
                     <span class="input-group-text">S/</span>
-                    <input asp-for="PrecioPactado" class="form-control" type="number" step="0.01" min="0" />
+                    <input asp-for="PrecioPactado" class="form-control" type="number" step="0.01" min="0" id="inputPrecio" />
                 </div>
                 <span asp-validation-for="PrecioPactado" class="text-danger small"></span>
             </div>
+
             <div class="row g-3 mb-3">
                 <div class="col">
                     <label asp-for="FechaInicio" class="form-label fw-semibold"></label>
@@ -52,12 +58,14 @@
                     <span asp-validation-for="FechaFin" class="text-danger small"></span>
                 </div>
             </div>
+
             <div class="mb-4">
                 <label asp-for="Estado" class="form-label fw-semibold"></label>
                 <select asp-for="Estado" class="form-select"
                     asp-items="Html.GetEnumSelectList<EstadoSuscripcion>()"></select>
                 <span asp-validation-for="Estado" class="text-danger small"></span>
             </div>
+
             <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
                 <i class="bi bi-floppy-fill"></i><span>Guardar cambios</span>
             </button>
@@ -65,4 +73,18 @@
     </div>
 </div>
 
-@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Mapa de PlanId → Precio cargado desde el servidor
+        const precios = @Html.Raw(ViewBag.PlanesJson ?? "{}");
+
+        document.getElementById('selectPlan').addEventListener('change', function () {
+            const planId = this.value;
+            const inputPrecio = document.getElementById('inputPrecio');
+            if (planId && precios[planId] !== undefined) {
+                inputPrecio.value = precios[planId];
+            }
+        });
+    </script>
+}

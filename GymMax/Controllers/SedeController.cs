@@ -16,9 +16,20 @@ public class SedeController : Controller
     }
 
     // GET: SEDES
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index(string? nombre, bool? activo)
     {
-        return View(await _context.Sedes.ToListAsync());
+        var query = _context.Sedes.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(nombre))
+            query = query.Where(s => s.Nombre.Contains(nombre));
+
+        if (activo.HasValue)
+            query = query.Where(s => s.Activo == activo.Value);
+
+        ViewBag.FiltroNombre = nombre;
+        ViewBag.FiltroActivo = activo;
+
+        return View(await query.ToListAsync());
     }
 
     // GET: SEDES/Details/5
