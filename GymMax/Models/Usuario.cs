@@ -42,9 +42,8 @@ namespace GymMax.Domain.Entities {
         [MaxLength(255)]
         public string PasswordHash { get; set; } = string.Empty;
 
-        [Required]
         [MaxLength(20)]
-        public string CodigoMembresia { get; set; } = string.Empty;
+        public string? CodigoMembresia { get; set; }
 
         [Required]
         public DateTime FechaRegistro { get; set; }
@@ -53,6 +52,6 @@ namespace GymMax.Domain.Entities {
         public EstadoUsuario Estado { get; set; }
 
         [ForeignKey(nameof(RolId))]
-        public Rol Rol { get; set; } = null!;
+        public Rol? Rol { get; set; }
     }
 }
