@@ -1,3 +1,4 @@
+
 using GymMax.Data;
 using GymMax.Enums;
 using GymMax.Models;
@@ -57,15 +58,13 @@ namespace GymMax.Controllers {
 
             return View(vm);
         }
-
-        public IActionResult Privacy() {
-            return View();
-        }
-
+        
         [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }
+
