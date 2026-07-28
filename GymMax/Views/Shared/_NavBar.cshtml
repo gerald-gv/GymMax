@@ -1,44 +1,91 @@
-﻿<nav class="bg-gray-950 sticky top-0 z-50 text-white shadow-xl border-b border-gray-800 backdrop-blur-xl">
+﻿<nav class="sticky top-0 z-50 border-b border-white/10 bg-gray-950 text-white shadow-xl backdrop-blur-xl">
 
-    <div class="max-w-7xl mx-auto px-6">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
 
-        <div class="flex justify-between items-center h-20">
+        <div class="flex h-20 items-center justify-between">
 
-            <a asp-controller="Home" asp-action="Index" class="text-2xl font-bold text-red-500 flex items-center gap-2">
-                <i class="fa-solid fa-dumbbell"></i>
-                GymMax
+            <!-- LOGO -->
+
+            <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2 text-xl font-bold tracking-tight transition hover:text-red-500 sm:text-2xl">
+                <i class="fa-solid fa-dumbbell text-red-500"></i>
+                <span>GymMax</span>
             </a>
 
-            <div class="hidden md:flex items-center gap-10">
 
-                <a asp-controller="Home" asp-action="Index" class="hover:text-red-500 transition">
+            <!-- NAVEGACION DESKTOP -->
+
+            <div class="hidden items-center gap-8 md:flex lg:gap-10">
+
+                <a asp-controller="Home" asp-action="Index" class="font-medium text-gray-200 transition hover:text-red-500">
                     Inicio
                 </a>
 
-
-                <a asp-controller="Planes" asp-action="Index" class="hover:text-red-500 transition">
+                <a asp-controller="Planes" asp-action="Index" class="font-medium text-gray-200 transition hover:text-red-500">
                     Planes
                 </a>
 
-
-                <a asp-controller="Sedes" asp-action="Index" class="hover:text-red-500 transition">
+                <a asp-controller="Sedes" asp-action="Index" class="font-medium text-gray-200 transition hover:text-red-500">
                     Sedes
                 </a>
 
-
-                <a href="#contacto" class="hover:text-red-500 transition">
+                <a href="#contacto" class="font-medium text-gray-200 transition hover:text-red-500">
                     Contacto
                 </a>
 
             </div>
 
-            <a asp-controller="Auth" asp-action="Login" class="bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-xl font-semibold transition">
-                Iniciar sesión
-            </a>
+
+            <!-- ACCIONES -->
+
+            <div class="flex items-center gap-3">
+
+                <a asp-controller="Auth" asp-action="Login" class="hidden rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition duration-300 hover:bg-red-700 sm:inline-flex">
+                    Iniciar sesión
+                </a>
 
 
+                <!-- BOTON MENU MOBILE -->
+
+                <button type="button" id="mobileMenuButton" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir menú"
+                        class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-gray-200 transition hover:bg-white/10 md:hidden">
+
+                    <i id="mobileMenuIcon" class="fa-solid fa-bars text-lg"></i>
+                </button>
+
+            </div>
         </div>
 
-    </div>
 
+        <!-- MENU MOBILE -->
+
+        <div id="mobileMenu" class="hidden border-t border-white/10 py-4 md:hidden">
+
+            <div class="flex flex-col gap-1">
+
+                <a asp-controller="Home" asp-action="Index" class="rounded-xl px-4 py-3 text-sm font-medium text-gray-200 transition hover:bg-white/10 hover:text-red-500">
+                    Inicio
+                </a>
+
+                <a asp-controller="Planes" asp-action="Index" class="rounded-xl px-4 py-3 text-sm font-medium text-gray-200 transition hover:bg-white/10 hover:text-red-500">
+                    Planes
+                </a>
+
+                <a asp-controller="Sedes" asp-action="Index" class="rounded-xl px-4 py-3 text-sm font-medium text-gray-200 transition hover:bg-white/10 hover:text-red-500">
+                    Sedes
+                </a>
+
+                <a href="#contacto" class="rounded-xl px-4 py-3 text-sm font-medium text-gray-200 transition hover:bg-white/10 hover:text-red-500">
+                    Contacto
+                </a>
+
+                <div class="my-2 border-t border-white/10"></div>
+
+                <a asp-controller="Auth" asp-action="Login" class="rounded-xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-700">
+                    Iniciar sesión
+                </a>
+
+            </div>
+
+        </div>
+    </div>
 </nav>

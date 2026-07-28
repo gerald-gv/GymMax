@@ -1,21 +1,52 @@
-﻿<section class="relative bg-gray-900 py-24">
+﻿<section class="relative overflow-hidden bg-gray-950 py-24 sm:py-28">
 
-    <div class="max-w-5xl mx-auto px-6 text-center text-white">
+    <!-- BRILLO IZQUIERDO -->
+    <div class="absolute -left-32 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-red-600/20 blur-3xl"></div>
 
-        <h2 class="text-5xl font-extrabold">
-            Tu transformación empieza ahora.
+    <!-- BRILLO DERECHO -->
+    <div class="absolute -right-32 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-red-600/20 blur-3xl"></div>
+
+
+    <div class="relative mx-auto max-w-5xl px-6 text-center">
+
+        <!-- ENCABEZADO -->
+
+        <span class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-red-500">
+            <span class="h-px w-6 bg-red-500"></span>
+            Empieza hoy
+            <span class="h-px w-6 bg-red-500"></span>
+        </span>
+
+
+        <h2 class="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Tu transformación
+            <span class="text-red-500"> empieza ahora. </span>
         </h2>
 
-        <p class="mt-6 text-xl text-gray-400 max-w-3xl mx-auto">
+
+        <!-- CONTENIDO -->
+
+        <p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-400 sm:text-lg">
             Únete a GymMax y forma parte de una comunidad enfocada
             en mejorar cada día.
         </p>
 
-        <a href="#planes"
-               class="inline-block mt-10 bg-red-600 hover:bg-red-500 px-10 py-4 rounded-xl font-bold transition duration-300 shadow-lg shadow-red-600/20">
-            Comenzar entrenamiento
-        </a>
+
+        <!-- BOTONES -->
+
+        <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+
+            <a asp-controller="Planes" asp-action="Index" class="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-red-600 px-8 py-4 font-semibold text-white shadow-lg shadow-red-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-red-700 sm:w-auto">
+                Ver nuestros planes
+                <i class="fa-solid fa-arrow-right transition-transform duration-300"></i>
+            </a>
+
+            <a asp-controller="Sedes" asp-action="Index" class="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-8 py-4 font-semibold text-gray-200 backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white/10 hover:text-white sm:w-auto">
+                Encontrar una sede
+                <i class="fa-solid fa-location-dot"></i>
+            </a>
+
+        </div>
 
     </div>
-
 </section>
