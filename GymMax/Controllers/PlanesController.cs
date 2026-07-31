@@ -1,20 +1,17 @@
-﻿using GymMax.Data;
+﻿using GymMax.Services.PlanesPublic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GymMax.Controllers {
     public class PlanesController : Controller {
-        private readonly AppDbContext _context;
 
-        public PlanesController(AppDbContext context) {
-            _context = context;
+        private readonly IPlanesPublicService _planesService;
+
+        public PlanesController(IPlanesPublicService planesService) {
+            _planesService = planesService;
         }
 
         public async Task<IActionResult> Index() {
-            var planes = await _context.Planes
-                .Where(p => p.Activo)
-                .ToListAsync();
-
+            var planes = await _planesService.ObtenerPlanesActivosAsync();
             return View(planes);
         }
     }

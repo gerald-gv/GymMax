@@ -3,165 +3,115 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GymMax.Models;
-using GymMax.Data;
+using GymMax.Services.Planes;
 
 [Authorize(Roles = "Administrador")]
 public class PlanController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly IPlanesService _planesService;
 
-    public PlanController(AppDbContext context)
-    {
-        _context = context;
+    public PlanController(IPlanesService planesService) {
+        _planesService = planesService;
     }
 
-    // GET: PLANS
-    public async Task<IActionResult> Index(string? nombre, decimal? precioMin, decimal? precioMax)
-    {
-        var query = _context.Planes.AsQueryable();
+    // GET: Plan
+    public async Task<IActionResult> Index(
+        string? nombre,
+        decimal? precioMin,
+        decimal? precioMax
+        ) {
+        var planes = await _planesService.ObtenerTodosAsync(
+            nombre,
+            precioMin,
+            precioMax);
 
-        if (!string.IsNullOrWhiteSpace(nombre))
-            query = query.Where(p => p.Nombre.Contains(nombre));
-
-        if (precioMin.HasValue)
-            query = query.Where(p => p.Precio >= precioMin.Value);
-
-        if (precioMax.HasValue)
-            query = query.Where(p => p.Precio <= precioMax.Value);
-
-        ViewBag.FiltroNombre    = nombre;
+        ViewBag.FiltroNombre = nombre;
         ViewBag.FiltroPrecioMin = precioMin;
         ViewBag.FiltroPrecioMax = precioMax;
 
-        return View(await query.ToListAsync());
+        return View(planes);
     }
 
-    // GET: PLANS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
+    // GET: Plan/Details/5
+    public async Task<IActionResult> Details(int? id) {
         if (id == null)
-        {
             return NotFound();
-        }
 
-        var plan = await _context.Planes
-            .FirstOrDefaultAsync(m => m.PlanId == id);
+        var plan = await _planesService.ObtenerPorIdAsync(id.Value);
+
         if (plan == null)
-        {
             return NotFound();
-        }
 
         return View(plan);
     }
 
-    // GET: PLANS/Create
-    public IActionResult Create()
-    {
+    // GET: Plan/Create
+    public IActionResult Create() {
         return View();
     }
 
-    // POST: PLANS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: Plan/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(plan);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(plan);
-    }
+    public async Task<IActionResult> Create([Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan) {
+        if (!ModelState.IsValid)
+            return View(plan);
 
-    // GET: PLANS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        await _planesService.CrearAsync(plan);
 
-        var plan = await _context.Planes.FindAsync(id);
-        if (plan == null)
-        {
-            return NotFound();
-        }
-        return View(plan);
-    }
-
-    // POST: PLANS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan)
-    {
-        if (id != plan.PlanId)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(plan);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlanExists(plan.PlanId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(plan);
-    }
-
-    // GET: PLANS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var plan = await _context.Planes
-            .FirstOrDefaultAsync(m => m.PlanId == id);
-        if (plan == null)
-        {
-            return NotFound();
-        }
-
-        return View(plan);
-    }
-
-    // POST: PLANS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var plan = await _context.Planes.FindAsync(id);
-        if (plan != null)
-        {
-            _context.Planes.Remove(plan);
-        }
-
-        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool PlanExists(int id)
-    {
-        return _context.Planes.Any(e => e.PlanId == id);
+    // GET: Plan/Edit/5
+    public async Task<IActionResult> Edit(int? id) {
+        if (id == null)
+            return NotFound();
+
+        var plan = await _planesService.ObtenerPorIdAsync(id.Value);
+
+        if (plan == null)
+            return NotFound();
+
+        return View(plan);
+    }
+
+    // POST: Plan/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit( int id, [Bind("PlanId,Nombre,Descripcion,DuracionDias,Precio,Activo")] Plan plan) {
+        
+        if (id != plan.PlanId) return NotFound();
+
+        if (!ModelState.IsValid) return View(plan);
+
+        try {
+            await _planesService.ActualizarAsync(plan);
+        } catch (DbUpdateConcurrencyException) {
+            if (!await _planesService.ExisteAsync(plan.PlanId))
+                return NotFound();
+
+            throw;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // GET: Plan/Delete/5
+    public async Task<IActionResult> Delete(int? id) {
+        if (id == null) return NotFound();
+
+        var plan = await _planesService.ObtenerPorIdAsync(id.Value);
+
+        if (plan == null) return NotFound();
+
+        return View(plan);
+    }
+
+    // POST: Plan/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id) {
+        await _planesService.EliminarAsync(id);
+        return RedirectToAction(nameof(Index));
     }
 }

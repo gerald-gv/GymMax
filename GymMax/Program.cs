@@ -1,4 +1,13 @@
 using GymMax.Data;
+using GymMax.Services.Auth;
+using GymMax.Services.Coaches;
+using GymMax.Services.Dashboard;
+using GymMax.Services.Planes;
+using GymMax.Services.PlanesPublic;
+using GymMax.Services.Sedes;
+using GymMax.Services.SedesPublic;
+using GymMax.Services.Suscripciones;
+using GymMax.Services.Usuarios;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +19,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
+
+
+builder.Services.AddScoped<ISedeService, SedeService>();
+builder.Services.AddScoped<ISedesPublicService, SedesPublicService>();
+builder.Services.AddScoped<IPlanesPublicService, PlanesPublicService>();
+builder.Services.AddScoped<IPlanesService, PlanesService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ISuscripcionService, SuscripcionService>();
+builder.Services.AddScoped<ICoachService, CoachService>();
 
 // Autenticación por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

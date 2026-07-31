@@ -2,6 +2,7 @@ using GymMax.Data;
 using GymMax.Domain.Entities;
 using GymMax.Enums;
 using GymMax.Models;
+using GymMax.Services.Usuarios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,57 +14,55 @@ namespace GymMax.Controllers
     [Authorize(Roles = "Administrador")]
     public class UsuariosController : Controller
     {
-        private readonly AppDbContext _context;
-
-        public UsuariosController(AppDbContext context)
-        {
-            _context = context;
+        private readonly IUsuarioService _usuarioService;
+        public UsuariosController(IUsuarioService usuarioService) {
+            _usuarioService = usuarioService;
         }
 
         // GET: Usuarios
-        public async Task<IActionResult> Index(string? nombre, int? rolId, EstadoUsuario? estado, DateOnly? fechaDesde, DateOnly? fechaHasta)
-        {
-            var query = _context.Usuarios.Include(u => u.Rol).AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(nombre))
-                query = query.Where(u => u.Nombres.Contains(nombre) || u.Apellidos.Contains(nombre));
-
-            if (rolId.HasValue)
-                query = query.Where(u => u.RolId == rolId);
-
-            if (estado.HasValue)
-                query = query.Where(u => u.Estado == estado);
-
-            if (fechaDesde.HasValue)
-                query = query.Where(u => DateOnly.FromDateTime(u.FechaRegistro) >= fechaDesde.Value);
-
-            if (fechaHasta.HasValue)
-                query = query.Where(u => DateOnly.FromDateTime(u.FechaRegistro) <= fechaHasta.Value);
+        public async Task<IActionResult> Index(
+            string? nombre,
+            int? rolId,
+            EstadoUsuario? estado,
+            DateOnly? fechaDesde,
+            DateOnly? fechaHasta
+            ) {
+            var usuarios = await _usuarioService.GetAllAsync(
+                nombre,
+                rolId,
+                estado,
+                fechaDesde,
+                fechaHasta);
 
             ViewBag.FiltroNombre = nombre;
-            ViewBag.FiltroRolId = new SelectList(_context.Roles, "RolId", "Nombre", rolId);
+
+            ViewBag.FiltroRolId = await _usuarioService.GetRolesSelectListAsync(rolId);
+
             ViewBag.FiltroEstado = new SelectList(
-                Enum.GetValues<EstadoUsuario>().Select(e => new { Value = (int)e, Text = e.ToString() }),
-                "Value", "Text", (int?)estado);
+                Enum.GetValues<EstadoUsuario>()
+                    .Select(e => new {
+                        Value = (int)e,
+                        Text = e.ToString()
+                    }),
+                "Value",
+                "Text",
+                (int?)estado);
+
             ViewBag.FiltroDesde = fechaDesde?.ToString("yyyy-MM-dd");
             ViewBag.FiltroHasta = fechaHasta?.ToString("yyyy-MM-dd");
 
-            return View(await query.ToListAsync());
+            return View(usuarios);
         }
 
         // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Details(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
-                .Include(u => u.Rol)
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
-            if (usuario == null)
-            {
+            var usuario = await _usuarioService.GetByIdAsync(id.Value);
+
+            if (usuario == null) {
                 return NotFound();
             }
 
@@ -71,74 +70,44 @@ namespace GymMax.Controllers
         }
 
         // GET: Usuarios/Create
-        public IActionResult Create()
-        {
-            ViewData["RolId"] = new SelectList(_context.Roles, "RolId", "Nombre");
+        public async Task<IActionResult> Create() {
+            ViewData["RolId"] = await _usuarioService.GetRolesSelectListAsync();
             return View();
         }
-        private string GenerarCodigoMembresia()
-        {
-            return $"GM-{Guid.NewGuid().ToString()[..8].ToUpper()}";
-        }
+
         // POST: Usuarios/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Usuario usuario, string Password)
-        {
+        public async Task<IActionResult> Create(
+            Usuario usuario,
+            string Password
+            ) {
             ModelState.Remove("PasswordHash");
-            if (ModelState.IsValid)
-            {
-                usuario.FechaRegistro = DateTime.Now;
-                var passwordHasher = new PasswordHasher<Usuario>();
-                usuario.PasswordHash = passwordHasher.HashPassword(usuario, Password);
-                if (usuario.RolId == (int)RolUsuario.Cliente)
-                {
-                    usuario.CodigoMembresia = GenerarCodigoMembresia();
-                }
-                _context.Usuarios.Add(usuario);
-                if (usuario.RolId == (int)RolUsuario.Coach)
-                {
-                    var coach = new Coach
-                    {
-                        Usuario = usuario,
-                        FechaIngreso = DateOnly.FromDateTime(DateTime.Now),
-                        // Activo refleja el estado del usuario: Activo=1 → true, Inactivo=2 → false
-                        Activo = usuario.Estado == EstadoUsuario.Activo
-                    };
-                    _context.Coaches.Add(coach);
-                }
-                await _context.SaveChangesAsync();
+
+            if (ModelState.IsValid) {
+                await _usuarioService.CreateAsync(usuario, Password);
                 return RedirectToAction(nameof(Index));
             }
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-            ViewData["RolId"] = new SelectList(
-                _context.Roles,
-                "RolId",
-                "Nombre",
-                usuario.RolId
-            );
+
+            ViewData["RolId"] = await _usuarioService.GetRolesSelectListAsync(usuario.RolId);
             return View(usuario);
         }
 
         // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
+            var usuario = await _usuarioService.GetForEditAsync(id.Value);
+
+            if (usuario == null) {
                 return NotFound();
             }
-            ViewData["RolId"] = new SelectList(_context.Roles, "RolId", "Nombre", usuario.RolId);
+
+            ViewData["RolId"] = await _usuarioService.GetRolesSelectListAsync(usuario.RolId);
             return View(usuario);
         }
 
@@ -147,81 +116,49 @@ namespace GymMax.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UsuarioId,RolId,Nombres,Apellidos,Dni,Email,Telefono,FechaNacimiento,CodigoMembresia,Estado")] Usuario usuarioInput, string? NuevaPassword)
-        {
-            if (id != usuarioInput.UsuarioId)
-            {
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("UsuarioId,RolId,Nombres,Apellidos,Dni,Email,Telefono,FechaNacimiento,CodigoMembresia,Estado")]
+            Usuario usuarioInput,
+            string? NuevaPassword
+            ) {
+            if (id != usuarioInput.UsuarioId) {
                 return NotFound();
             }
-            // Ignoramos la validación del modelo para la contraseña, ya que la gestionamos manualmente
+
             ModelState.Remove("PasswordHash");
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // Traer el usuario original guardado en la base de datos
-                    var usuarioDb = await _context.Usuarios.FindAsync(id);
-                    if (usuarioDb == null)
-                    {
+            if (ModelState.IsValid) {
+                try {
+                    var actualizado = await _usuarioService.UpdateAsync( usuarioInput, NuevaPassword);
+
+                    if (!actualizado) {
+                        return NotFound();
+                    }
+                } catch {
+                    if (!await _usuarioService.ExistsAsync(usuarioInput.UsuarioId)) {
                         return NotFound();
                     }
 
-                    // Actualizar los campos normles
-                    usuarioDb.RolId = usuarioInput.RolId;
-                    usuarioDb.Nombres = usuarioInput.Nombres;
-                    usuarioDb.Apellidos = usuarioInput.Apellidos;
-                    usuarioDb.Dni = usuarioInput.Dni;
-                    usuarioDb.Email = usuarioInput.Email;
-                    usuarioDb.Telefono = usuarioInput.Telefono;
-                    usuarioDb.FechaNacimiento = usuarioInput.FechaNacimiento;
-                    usuarioDb.Estado = usuarioInput.Estado;
-
-                    // Solo si ingresó una nueva contraseña, la hasheamos y actualizamos
-                    if (!string.IsNullOrWhiteSpace(NuevaPassword))
-                    {
-                        var passwordHasher = new PasswordHasher<Usuario>();
-                        usuarioDb.PasswordHash = passwordHasher.HashPassword(usuarioDb, NuevaPassword);
-                    }
-
-                    // Si el usuario es coach, sincronizar Coach.Activo con su nuevo estado
-                    var coachAsociado = await _context.Coaches
-                        .FirstOrDefaultAsync(c => c.UsuarioId == usuarioDb.UsuarioId);
-                    if (coachAsociado != null)
-                        coachAsociado.Activo = usuarioDb.Estado == EstadoUsuario.Activo;
-
-                    // Guardar los cambios
-                    await _context.SaveChangesAsync();                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsuarioExists(usuarioInput.UsuarioId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RolId"] = new SelectList(_context.Roles, "RolId", "Nombre", usuarioInput.RolId);
+
+            ViewData["RolId"] = await _usuarioService.GetRolesSelectListAsync(usuarioInput.RolId);
             return View(usuarioInput);
         }
 
         // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
-                .Include(u => u.Rol)
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
-            if (usuario == null)
-            {
+            var usuario = await _usuarioService.GetByIdAsync(id.Value);
+
+            if (usuario == null) {
                 return NotFound();
             }
 
@@ -231,21 +168,9 @@ namespace GymMax.Controllers
         // POST: Usuarios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
-            {
-                _context.Usuarios.Remove(usuario);
-            }
-
-            await _context.SaveChangesAsync();
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            await _usuarioService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuarios.Any(e => e.UsuarioId == id);
         }
     }
 }

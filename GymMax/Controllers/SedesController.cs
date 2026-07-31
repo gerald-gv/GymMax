@@ -1,19 +1,17 @@
-﻿using GymMax.Data;
+﻿using GymMax.Services.SedesPublic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GymMax.Controllers {
     public class SedesController : Controller {
-        private readonly AppDbContext _context;
 
-        public SedesController(AppDbContext context) {
-            _context = context;
+        private readonly ISedesPublicService _sedeService;
+
+        public SedesController(ISedesPublicService sedeService) {
+            _sedeService = sedeService;
         }
 
         public async Task<IActionResult> Index() {
-            var sedes = await _context.Sedes
-                .Where(s => s.Activo)
-                .ToListAsync();
+            var sedes = await _sedeService.ObtenerSedesActivasAsync();
 
             return View(sedes);
         }
