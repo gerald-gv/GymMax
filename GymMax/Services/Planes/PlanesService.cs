@@ -50,7 +50,8 @@ namespace GymMax.Services.Planes {
 
             if (plan is null) return;
 
-            _context.Planes.Remove(plan);
+            // Soft delete: desactivar en lugar de eliminar
+            plan.Activo = false;
             await _context.SaveChangesAsync();
         }
 

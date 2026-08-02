@@ -132,7 +132,13 @@ namespace GymMax.Services.Usuarios {
                 return false;
             }
 
-            _context.Usuarios.Remove(usuario);
+            // Soft delete: marcar como Inactivo en lugar de eliminar
+            usuario.Estado = EstadoUsuario.Inactivo;
+
+            // Desactivar coach asociado si existe
+            var coach = await _context.Coaches.FirstOrDefaultAsync(c => c.UsuarioId == id);
+            if (coach != null)
+                coach.Activo = false;
 
             await _context.SaveChangesAsync();
             return true;

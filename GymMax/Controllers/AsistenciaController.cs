@@ -45,76 +45,92 @@ public class AsistenciaController : Controller
     }
 
     // GET: ASISTENCIAS/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        await CargarViewBagAsistencia(null, null);
         return View();
     }
 
     // POST: ASISTENCIAS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("AsistenciaId,UsuarioId,SedeId,FechaHoraEntrada,Usuario,Sede")] Asistencia asistencia)
+    public async Task<IActionResult> Create([Bind("AsistenciaId,UsuarioId,SedeId,FechaHoraEntrada")] Asistencia asistencia)
     {
+        ModelState.Remove("Usuario");
+        ModelState.Remove("Sede");
+
         if (ModelState.IsValid)
         {
             _context.Add(asistencia);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        await CargarViewBagAsistencia(asistencia.UsuarioId, asistencia.SedeId);
         return View(asistencia);
     }
 
     // GET: ASISTENCIAS/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
         var asistencia = await _context.Asistencias.FindAsync(id);
-        if (asistencia == null)
-        {
-            return NotFound();
-        }
+        if (asistencia == null) return NotFound();
+
+        await CargarViewBagAsistencia(asistencia.UsuarioId, asistencia.SedeId);
         return View(asistencia);
     }
 
     // POST: ASISTENCIAS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("AsistenciaId,UsuarioId,SedeId,FechaHoraEntrada,Usuario,Sede")] Asistencia asistencia)
+    public async Task<IActionResult> Edit(int id, [Bind("AsistenciaId,UsuarioId,SedeId,FechaHoraEntrada")] Asistencia asistencia)
     {
-        if (id != asistencia.AsistenciaId)
-        {
-            return NotFound();
-        }
+        if (id != asistencia.AsistenciaId) return NotFound();
+
+        ModelState.Remove("Usuario");
+        ModelState.Remove("Sede");
 
         if (ModelState.IsValid)
         {
             try
             {
-                _context.Update(asistencia);
+                var asistenciaDb = await _context.Asistencias.FindAsync(id);
+                if (asistenciaDb == null) return NotFound();
+
+                asistenciaDb.UsuarioId       = asistencia.UsuarioId;
+                asistenciaDb.SedeId          = asistencia.SedeId;
+                asistenciaDb.FechaHoraEntrada = asistencia.FechaHoraEntrada;
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AsistenciaExists(asistencia.AsistenciaId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                if (!AsistenciaExists(asistencia.AsistenciaId)) return NotFound();
+                else throw;
             }
             return RedirectToAction(nameof(Index));
         }
+
+        await CargarViewBagAsistencia(asistencia.UsuarioId, asistencia.SedeId);
         return View(asistencia);
+    }
+
+    // Método auxiliar para cargar selects de Usuario y Sede
+    private async Task CargarViewBagAsistencia(int? usuarioId, int? sedeId)
+    {
+        var usuarios = await _context.Usuarios
+            .Where(u => u.RolId == (int)GymMax.Enums.RolUsuario.Cliente && u.Estado == GymMax.Enums.EstadoUsuario.Activo)
+            .Select(u => new { Value = u.UsuarioId, Text = $"{u.Nombres} {u.Apellidos}" })
+            .ToListAsync();
+        ViewBag.UsuarioId = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(usuarios, "Value", "Text", usuarioId);
+
+        var sedes = await _context.Sedes
+            .Where(s => s.Activo)
+            .Select(s => new { Value = s.SedeId, Text = s.Nombre })
+            .ToListAsync();
+        ViewBag.SedeId = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(sedes, "Value", "Text", sedeId);
     }
 
     // GET: ASISTENCIAS/Delete/5

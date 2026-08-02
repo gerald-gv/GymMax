@@ -55,17 +55,16 @@ namespace GymMax.Services.Sedes {
         }
 
         public async Task<bool> EliminarAsync(int id) {
-            var sede = await _context.Sedes
-                .FirstOrDefaultAsync(s => s.SedeId == id);
+            var sede = await _context.Sedes.FirstOrDefaultAsync(s => s.SedeId == id);
 
             if (sede == null) {
                 return false;
             }
 
-            _context.Sedes.Remove(sede);
+            // Soft delete: desactivar en lugar de eliminar
+            sede.Activo = false;
 
             await _context.SaveChangesAsync();
-
             return true;
         }
     }

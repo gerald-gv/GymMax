@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Pago fallido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .error-card {
+        border-radius: 1rem;
+    }
+
+    .badge-icon-danger {
+        width: 70px;
+        height: 70px;
+    }
+</style>
+
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card border-0 shadow-sm error-card bg-white w-100" style="max-width: 500px;">
+        <div class="card-body p-4 p-md-5 text-center">
+
+            <!-- Icono destacado de error -->
+            <div class="mb-4 d-inline-block">
+                <span class="badge-icon-danger bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto shadow-sm">
+                    <i class="bi bi-x-lg fs-1"></i>
+                </span>
+            </div>
+
+            <!-- Encabezado -->
+            <h3 class="fw-bold text-dark mb-1">No se pudo procesar el pago</h3>
+            <p class="text-secondary small mb-4">Ocurrió un inconveniente durante la transacción y no se realizó ningún cargo a tu cuenta.</p>
+
+            <!-- Resumen del Intento -->
+            @if (ViewBag.Plan != null)
+            {
+                <div class="bg-light p-3.5 p-sm-4 rounded-3 text-start mb-4 border">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary small">Plan seleccionado</span>
+                        <span class="fw-bold text-dark small">@ViewBag.Plan?.Nombre</span>
+                    </div>
+                </div>
+            }
+
+            <!-- Posibles Causas / Ayuda -->
+            <div class="text-start mb-4 p-3 bg-white border rounded-3">
+                <h6 class="fw-bold text-dark mb-2 fs-6">
+                    <i class="bi bi-info-circle text-danger me-1.5"></i> Razones habituales por las que esto sucede:
+                </h6>
+                <ul class="list-unstyled text-secondary small mb-0 d-grid gap-1.5">
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-dot text-danger fs-4 lh-1"></i> Fondos insuficientes o límite de tarjeta alcanzado.
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-dot text-danger fs-4 lh-1"></i> Tu banco bloqueó la operación por seguridad.
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-dot text-danger fs-4 lh-1"></i> Los datos de la tarjeta ingresados no son correctos.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="d-grid gap-2">
+                <a asp-controller="PagoMP" asp-action="Confirmar" asp-route-planId="@ViewBag.Plan?.PlanId"
+                   class="btn btn-primary py-2.5 fw-semibold rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                    <i class="bi bi-arrow-counterclockwise fs-6"></i> Reintentar pago
+                </a>
+                <a asp-controller="Cliente" asp-action="Planes"
+                   class="btn btn-outline-secondary py-2 fw-semibold rounded-3">
+                    Volver a los planes
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
