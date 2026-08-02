@@ -17,6 +17,8 @@ namespace GymMax.Services.Suscripciones {
 
         Task EliminarAsync(int id);
 
+        Task CancelarAsync(int id);
+
         Task<bool> ExisteAsync(int id);
     }
 }

@@ -1,0 +1,79 @@
+@{
+    ViewData["Title"] = "Pago exitoso";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .success-card {
+        border-radius: 1rem;
+    }
+
+    .badge-icon {
+        width: 70px;
+        height: 70px;
+    }
+</style>
+
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card border-0 shadow-sm success-card bg-white w-100" style="max-width: 500px;">
+        <div class="card-body p-4 p-md-5 text-center">
+
+            <!-- Icono animado/destacado -->
+            <div class="mb-4 d-inline-block">
+                <span class="badge-icon bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center mx-auto shadow-sm">
+                    <i class="bi bi-check-lg fs-1"></i>
+                </span>
+            </div>
+
+            <!-- Encabezado -->
+            <h3 class="fw-bold text-dark mb-1">¡Gracias por tu compra!</h3>
+            <p class="text-secondary small mb-4">Tu pago ha sido procesado correctamente y tu membresía ya está disponible.</p>
+
+            <!-- Ticket / Comprobante de Resumen -->
+            <div class="bg-light p-3.5 p-sm-4 rounded-3 text-start mb-4 border">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <span class="text-secondary small">Estado</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold px-2.5 py-1 rounded-pill">
+                        <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem; vertical-align: middle;"></i> Pago Aprobado
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small">Plan activado</span>
+                    <span class="fw-bold text-dark small">@ViewBag.Plan?.Nombre</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-secondary small">ID de transacción</span>
+                    <span class="fw-mono text-dark small font-monospace">#@ViewBag.PaymentId</span>
+                </div>
+            </div>
+
+            <!-- Sugerencia de Próximos Pasos -->
+            <div class="text-start mb-4 p-3 bg-white border rounded-3">
+                <h6 class="fw-bold text-dark mb-2 fs-6">
+                    <i class="bi bi-rocket-takeoff text-primary me-1.5"></i> ¿Qué sigue ahora?
+                </h6>
+                <ul class="list-unstyled text-secondary small mb-0 d-grid gap-1.5">
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check2 text-success"></i> Tu plan ya se encuentra activo en el sistema.
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check2 text-success"></i> Puedes revisar tu fecha de vencimiento en tu portal.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="d-grid gap-2">
+                <a asp-controller="Cliente" asp-action="Index" class="btn btn-primary py-2.5 fw-semibold rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                    <i class="bi bi-house-door-fill"></i> Ir a mi portal
+                </a>
+                <a asp-controller="Cliente" asp-action="Planes" class="btn btn-outline-secondary py-2 fw-semibold rounded-3">
+                    Explorar más planes
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

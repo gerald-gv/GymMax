@@ -1,0 +1,68 @@
+@model GymMax.Models.Plan
+@{
+    ViewData["Title"] = "Confirmar compra";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .checkout-card {
+        border-radius: 0.85rem;
+    }
+</style>
+
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card border-0 shadow-sm checkout-card bg-white w-100" style="max-width: 480px;">
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Icono y Encabezado -->
+            <div class="text-center mb-4">
+                <span class="bg-primary-subtle text-primary p-3 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                    <i class="bi bi-shield-check fs-2"></i>
+                </span>
+                <h4 class="fw-bold text-dark mb-1">Confirmar suscripción</h4>
+                <p class="text-secondary small mb-0">Revisa los detalles de tu plan antes de proceder al pago seguro.</p>
+            </div>
+
+            <!-- Resumen del Plan (Tarjeta Interna) -->
+            <div class="bg-light p-3 p-sm-4 rounded-3 mb-4 border">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="fw-bold text-dark m-0 fs-5">@Model.Nombre</h5>
+                    <span class="badge bg-white text-dark border fw-normal px-2.5 py-1.5 rounded-2 d-inline-flex align-items-center">
+                        <i class="bi bi-clock-history me-1 text-primary"></i> @Model.DuracionDias días
+                    </span>
+                </div>
+
+                <p class="text-secondary small mb-3">@Model.Descripcion</p>
+
+                <div class="pt-3 border-top d-flex justify-content-between align-items-baseline">
+                    <span class="text-secondary small text-uppercase fw-semibold">Total a pagar</span>
+                    <div class="d-flex align-items-baseline">
+                        <span class="fs-6 fw-semibold text-secondary me-1">S/</span>
+                        <span class="fs-3 fw-bold text-dark">@Model.Precio.ToString("N2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Acción -->
+            <form asp-action="IniciarPago" asp-controller="PagoMP" method="post">
+                <input type="hidden" name="planId" value="@Model.PlanId" />
+                <div class="d-grid gap-2.5">
+                    <button type="submit" class="btn btn-primary py-2.5 fw-semibold rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="bi bi-credit-card-fill fs-6"></i> Pagar con MercadoPago
+                    </button>
+                    <a asp-controller="Cliente" asp-action="Planes" class="btn btn-outline-secondary py-2 fw-semibold rounded-3 text-center">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- Nota de Pago Seguro -->
+            <div class="text-center mt-4">
+                <span class="text-muted small d-inline-flex align-items-center gap-1" style="font-size: 0.8rem;">
+                    <i class="bi bi-lock-fill text-success"></i> Transacción procesada de forma segura
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>

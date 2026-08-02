@@ -172,7 +172,12 @@ public class CoachController : Controller
         var coach = await _context.Coaches.FindAsync(id);
         if (coach != null)
         {
-            _context.Coaches.Remove(coach);
+            // Soft delete: desactivar coach y su usuario asociado
+            coach.Activo = false;
+
+            var usuario = await _context.Usuarios.FindAsync(coach.UsuarioId);
+            if (usuario != null)
+                usuario.Estado = GymMax.Enums.EstadoUsuario.Inactivo;
         }
 
         await _context.SaveChangesAsync();

@@ -31,12 +31,20 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ISuscripcionService, SuscripcionService>();
 builder.Services.AddScoped<ICoachService, CoachService>();
 
+// HttpClient para MercadoPago
+builder.Services.AddHttpClient("MercadoPago", client =>
+{
+    client.BaseAddress = new Uri("https://api.mercadopago.com");
+    client.DefaultRequestHeaders.Add("Authorization",
+        $"Bearer {builder.Configuration["MercadoPago:AccessToken"]}");
+});
+
 // Autenticación por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Auth/Login";        // redirige aquí si no hay sesión
-        options.AccessDeniedPath = "/Auth/Login"; // redirige aquí si no tiene el rol
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccesoDenegado";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
     });

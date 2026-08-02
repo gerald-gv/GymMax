@@ -14,6 +14,18 @@ namespace GymMax.Services.Suscripciones {
         }
 
         public async Task<List<Suscripcion>> ObtenerTodasAsync() {
+            var hoy = DateOnly.FromDateTime(DateTime.Today);
+
+            // Auto-vencer suscripciones cuya FechaFin ya pasó y siguen Activas
+            var vencidas = await _context.Suscripciones
+                .Where(s => s.Estado == EstadoSuscripcion.Activa && s.FechaFin < hoy)
+                .ToListAsync();
+
+            if (vencidas.Any()) {
+                vencidas.ForEach(s => s.Estado = EstadoSuscripcion.Vencida);
+                await _context.SaveChangesAsync();
+            }
+
             return await _context.Suscripciones
                 .Include(s => s.Usuario)
                 .Include(s => s.Plan)
@@ -21,10 +33,20 @@ namespace GymMax.Services.Suscripciones {
         }
 
         public async Task<Suscripcion?> ObtenerPorIdAsync(int id) {
-            return await _context.Suscripciones
+            var suscripcion = await _context.Suscripciones
                 .Include(s => s.Usuario)
                 .Include(s => s.Plan)
                 .FirstOrDefaultAsync(s => s.SuscripcionId == id);
+
+            // Auto-vencer si aplica
+            if (suscripcion != null
+                && suscripcion.Estado == EstadoSuscripcion.Activa
+                && suscripcion.FechaFin < DateOnly.FromDateTime(DateTime.Today)) {
+                suscripcion.Estado = EstadoSuscripcion.Vencida;
+                await _context.SaveChangesAsync();
+            }
+
+            return suscripcion;
         }
 
         public async Task<List<Usuario>> ObtenerClientesActivosAsync() {
@@ -55,12 +77,18 @@ namespace GymMax.Services.Suscripciones {
                 return false;
             }
 
-            suscripcionDb.UsuarioId = suscripcion.UsuarioId;
-            suscripcionDb.PlanId = suscripcion.PlanId;
+            // Una suscripción cancelada no puede reactivarse
+            if (suscripcionDb.Estado == EstadoSuscripcion.Cancelada
+                && suscripcion.Estado == EstadoSuscripcion.Activa) {
+                return false;
+            }
+
+            suscripcionDb.UsuarioId     = suscripcion.UsuarioId;
+            suscripcionDb.PlanId        = suscripcion.PlanId;
             suscripcionDb.PrecioPactado = suscripcion.PrecioPactado;
-            suscripcionDb.FechaInicio = suscripcion.FechaInicio;
-            suscripcionDb.FechaFin = suscripcion.FechaFin;
-            suscripcionDb.Estado = suscripcion.Estado;
+            suscripcionDb.FechaInicio   = suscripcion.FechaInicio;
+            suscripcionDb.FechaFin      = suscripcion.FechaFin;
+            suscripcionDb.Estado        = suscripcion.Estado;
 
             await _context.SaveChangesAsync();
 
@@ -68,15 +96,17 @@ namespace GymMax.Services.Suscripciones {
         }
 
         public async Task EliminarAsync(int id) {
-            var suscripcion = await _context.Suscripciones
-                .FindAsync(id);
-
-            if (suscripcion == null) {
-                return;
-            }
-
+            var suscripcion = await _context.Suscripciones.FindAsync(id);
+            if (suscripcion == null) return;
             _context.Suscripciones.Remove(suscripcion);
+            await _context.SaveChangesAsync();
+        }
 
+        public async Task CancelarAsync(int id) {
+            var suscripcion = await _context.Suscripciones.FindAsync(id);
+            if (suscripcion == null) return;
+            // Soft delete: marcar como Cancelada en lugar de eliminar
+            suscripcion.Estado = EstadoSuscripcion.Cancelada;
             await _context.SaveChangesAsync();
         }
 

@@ -94,6 +94,14 @@ public class SuscripcionController : Controller
             var actualizado = await _suscripcionService.ActualizarAsync(suscripcion);
 
             if (!actualizado) {
+                // Puede ser que no exista o que sea una cancelada que no se puede reactivar
+                var original = await _suscripcionService.ObtenerPorIdAsync(suscripcion.SuscripcionId);
+                if (original?.Estado == EstadoSuscripcion.Cancelada && suscripcion.Estado == EstadoSuscripcion.Activa) {
+                    ModelState.AddModelError(nameof(suscripcion.Estado),
+                        "Una suscripción cancelada no puede reactivarse. Crea una nueva suscripción si el cliente desea retomar el plan.");
+                    await CargarViewBags(suscripcion.UsuarioId, suscripcion.PlanId);
+                    return View(suscripcion);
+                }
                 return NotFound();
             }
 
@@ -123,8 +131,7 @@ public class SuscripcionController : Controller
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id) {
-        await _suscripcionService.EliminarAsync(id);
-
+        await _suscripcionService.CancelarAsync(id);
         return RedirectToAction(nameof(Index));
     }
 

@@ -104,17 +104,18 @@ namespace GymMax.Controllers
             var rol = User.FindFirstValue(ClaimTypes.Role);
 
             return rol switch {
-                nameof(RolUsuario.Administrador)
-                    => RedirectToAction("Index", "Dashboard"),
-
-                nameof(RolUsuario.Coach)
-                    => RedirectToAction("Login", "Auth"),
-
-                nameof(RolUsuario.Cliente)
-                    => RedirectToAction("Login", "Auth"),
-
-                _ => RedirectToAction("Login", "Auth")
+                nameof(RolUsuario.Administrador) => RedirectToAction("Index", "Dashboard"),
+                nameof(RolUsuario.Coach)         => RedirectToAction("Index", "Home"),
+                nameof(RolUsuario.Cliente)       => RedirectToAction("Index", "Cliente"),
+                _                                => RedirectToAction("Login", "Auth")
             };
+        }
+
+        // GET: /Auth/AccesoDenegado
+        [AllowAnonymous]
+        public IActionResult AccesoDenegado()
+        {
+            return View();
         }
     }
 }
