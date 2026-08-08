@@ -1,7 +1,7 @@
 using GymMax.Data;
 using GymMax.Enums;
-using GymMax.Models;
 using GymMax.Services.Auth;
+using GymMax.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -117,5 +117,56 @@ namespace GymMax.Controllers
         {
             return View();
         }
+
+
+        // GET: /Auth/Register
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Register() {
+            if (User.Identity?.IsAuthenticated == true) {
+                return RedirectSegunRol();
+            }
+
+            return View();
+        }
+
+        // POST: /Auth/Register
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegistroViewModel model) {
+            if (!ModelState.IsValid) {
+                return View(model);
+            }
+
+            var resultado = await _authService.RegistrarAsync(model);
+            if (resultado == ResultadoRegistro.EmailYaExiste) {
+                ModelState.AddModelError(nameof(model.Email), "Ya existe una cuenta registrada con este email");
+                return View(model);
+            }
+
+
+            if (resultado == ResultadoRegistro.DniYaExiste) {
+                ModelState.AddModelError(nameof(model.Dni), "Ya existe una cuenta registrada con este DNI.");
+                return View(model);
+            }
+
+            // Login automatico luego del registro
+            var loginModel = new LoginViewModel { Email = model.Email, Password = model.Password };
+            var principal = await _authService.AutenticarAsync(loginModel);
+
+            if(principal != null) {
+                await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        principal
+                    );
+
+                return RedirectSegunRol();
+            }
+
+            return RedirectToAction("Login");
+        }
+
     }
 }

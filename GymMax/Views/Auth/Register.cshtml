@@ -1,0 +1,156 @@
+﻿@model GymMax.ViewModels.RegistroViewModel
+
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<div class="flex min-h-full items-center justify-center px-4 py-10">
+
+    <div class="w-full max-w-md rounded-xl bg-white p-8 shadow-xl">
+
+        <!-- Encabezado -->
+        <div class="text-center">
+
+            <i class="fa-solid fa-user-plus text-5xl text-red-600"></i>
+
+            <h2 class="mt-4 text-3xl font-bold text-gray-900">
+                Crear cuenta
+            </h2>
+
+            <p class="mt-2 text-gray-500">
+                Regístrate en GymMax para comenzar
+            </p>
+
+        </div>
+
+
+        <!-- Formulario -->
+        <form asp-controller="Auth" asp-action="Register" method="post" class="mt-8 space-y-5">
+            @Html.AntiForgeryToken()
+
+            <!-- Errores generales -->
+            <div asp-validation-summary="ModelOnly"
+                 class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+            </div>
+
+            <!-- Nombres -->
+            <div>
+
+                <label asp-for="Nombres" class="mb-2 block font-medium text-gray-700">
+                    Nombres
+                </label>
+
+                <input asp-for="Nombres" type="text" autocomplete="given-name" placeholder="Ingresa tus nombres" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+                <span asp-validation-for="Nombres" class="mt-1 block text-sm text-red-600"></span>
+
+            </div>
+
+
+            <!-- Apellidos -->
+            <div>
+
+                <label asp-for="Apellidos" class="mb-2 block font-medium text-gray-700">
+                    Apellidos
+                </label>
+
+                <input asp-for="Apellidos" type="text" autocomplete="family-name" placeholder="Ingresa tus apellidos" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+
+                <span asp-validation-for="Apellidos" class="mt-1 block text-sm text-red-600"></span>
+
+            </div>
+
+            <!-- DNI -->
+            <div>
+
+                <label asp-for="Dni" class="mb-2 block font-medium text-gray-700">
+                    DNI
+                </label>
+
+                <input asp-for="Dni" type="text" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="12345678" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+                <span asp-validation-for="Dni" class="mt-1 block text-sm text-red-600"></span>
+            </div>
+
+
+            <!-- Correo electrónico -->
+            <div>
+
+                <label asp-for="Email" class="mb-2 block font-medium text-gray-700">
+                    Correo electrónico
+                </label>
+
+                <input asp-for="Email" type="email" autocomplete="email" placeholder="correo@ejemplo.com" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+
+                <span asp-validation-for="Email" class="mt-1 block text-sm text-red-600"></span>
+
+            </div>
+
+
+            <!-- Teléfono -->
+            <div>
+                <label asp-for="Telefono" class="mb-2 block font-medium text-gray-700">
+                    Teléfono
+                </label>
+                <input asp-for="Telefono" type="tel" autocomplete="tel" placeholder="987654321" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+                <span asp-validation-for="Telefono" class="mt-1 block text-sm text-red-600"></span>
+            </div>
+
+            <!-- Fecha de nacimiento -->
+            <div>
+                <label asp-for="FechaNacimiento" class="mb-2 block font-medium text-gray-700">
+                    Fecha de nacimiento
+                </label>
+                <input asp-for="FechaNacimiento" type="date" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+                <span asp-validation-for="FechaNacimiento" class="mt-1 block text-sm text-red-600"></span>
+            </div>
+
+
+            <!-- Contraseña -->
+            <div>
+
+                <label asp-for="Password" class="mb-2 block font-medium text-gray-700">
+                    Contraseña
+                </label>
+
+                <input asp-for="Password" type="password" autocomplete="new-password" placeholder="••••••••" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+
+                <span asp-validation-for="Password" class="mt-1 block text-sm text-red-600"> </span>
+
+            </div>
+
+
+            <!-- Confirmar contraseña -->
+            <div>
+
+                <label asp-for="ConfirmPassword" class="mb-2 block font-medium text-gray-700">
+                    Confirmar contraseña
+                </label>
+
+                <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" placeholder="••••••••" class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500" />
+
+                <span asp-validation-for="ConfirmPassword" class="mt-1 block text-sm text-red-600"></span>
+
+            </div>
+
+
+            <button type="submit" class="w-full rounded-lg bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 hover:shadow-lg">
+                <i class="fa-solid fa-user-plus mr-2"></i>
+                Crear cuenta
+            </button>
+
+        </form>
+
+
+        <!-- Enlace al Login -->
+        <div class="mt-6 text-center">
+
+            <p class="text-sm text-gray-500">
+                ¿Ya tienes una cuenta?
+                <a asp-controller="Auth" asp-action="Login" class="font-medium text-red-600 transition hover:text-red-700">
+                    Iniciar sesión
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+</div>

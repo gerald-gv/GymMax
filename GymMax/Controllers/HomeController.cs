@@ -1,5 +1,5 @@
 ﻿using GymMax.Data;
-using GymMax.Models;
+using GymMax.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

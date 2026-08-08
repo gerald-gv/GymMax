@@ -45,9 +45,16 @@
                         Mi Portal
                     </a>
                 } else if (!User.Identity!.IsAuthenticated) {
+
+                    <!-- Login -->
                     <a asp-controller="Auth" asp-action="Login"
                        class="hidden rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition duration-300 hover:bg-red-700 sm:inline-flex">
                         Iniciar sesión
+                    </a>
+
+                    <!-- Registrar -->
+                    <a asp-controller="Auth" asp-action="Register" class="hidden rounded-xl border !border-red-600 px-5 py-2.5 text-sm font-semibold text-red-500 transition duration-300 hover:bg-red-600 hover:text-white sm:inline-flex">
+                        Registrarse
                     </a>
                 }
 
@@ -94,10 +101,19 @@
                         Mi Portal
                     </a>
                 } else if (!User.Identity!.IsAuthenticated) {
-                    <a asp-controller="Auth" asp-action="Login"
-                       class="rounded-xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-700">
-                        Iniciar sesión
-                    </a>
+
+                    <div class="flex flex-col space-y-2">
+                        <!-- Login -->
+                        <a asp-controller="Auth" asp-action="Login"
+                               class="rounded-xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-700">
+                            Iniciar sesión
+                        </a>
+
+                        <!-- Registrar -->
+                        <a asp-controller="Auth" asp-action="Register" class="rounded-xl border border-red-600 px-4 py-3 text-center text-sm font-semibold text-red-500 transition hover:bg-red-600 hover:text-white">
+                            Registrarse
+                        </a>
+                    </div>
                 }
 
             </div>

@@ -1,6 +1,6 @@
 using GymMax.DTOs;
 
-namespace GymMax.Models
+namespace GymMax.ViewModels
 {
     public class DashboardViewModel
     {

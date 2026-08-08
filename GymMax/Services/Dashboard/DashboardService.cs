@@ -1,7 +1,7 @@
 ﻿using GymMax.Data;
 using GymMax.DTOs;
 using GymMax.Enums;
-using GymMax.Models;
+using GymMax.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymMax.Services.Dashboard {

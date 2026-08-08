@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GymMax.Models
+namespace GymMax.ViewModels
 {
     public class LoginViewModel
     {

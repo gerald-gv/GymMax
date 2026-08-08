@@ -1,4 +1,4 @@
-namespace GymMax.Models {
+namespace GymMax.ViewModels {
     public class ErrorViewModel {
         public string? RequestId { get; set; }
 
