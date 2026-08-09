@@ -75,16 +75,6 @@ namespace GymMax.Services.Usuarios {
             }
 
             _context.Usuarios.Add(usuario);
-
-            if (usuario.RolId == (int)RolUsuario.Coach) {
-                var coach = new Coach {
-                    Usuario = usuario,
-                    FechaIngreso = DateOnly.FromDateTime(DateTime.Now),
-                    Activo = usuario.Estado == EstadoUsuario.Activo
-                };
-
-                _context.Coaches.Add(coach);
-            }
             await _context.SaveChangesAsync();
             return true;
         }
@@ -114,13 +104,6 @@ namespace GymMax.Services.Usuarios {
                 usuarioDb.PasswordHash = passwordHasher.HashPassword(usuarioDb, nuevaPassword);
             }
 
-            var coachAsociado = await _context.Coaches
-                .FirstOrDefaultAsync(c => c.UsuarioId == usuarioDb.UsuarioId);
-
-            if (coachAsociado != null) {
-                coachAsociado.Activo =
-                    usuarioDb.Estado == EstadoUsuario.Activo;
-            }
             await _context.SaveChangesAsync();
             return true;
         }
@@ -135,10 +118,6 @@ namespace GymMax.Services.Usuarios {
             // Soft delete: marcar como Inactivo en lugar de eliminar
             usuario.Estado = EstadoUsuario.Inactivo;
 
-            // Desactivar coach asociado si existe
-            var coach = await _context.Coaches.FirstOrDefaultAsync(c => c.UsuarioId == id);
-            if (coach != null)
-                coach.Activo = false;
 
             await _context.SaveChangesAsync();
             return true;

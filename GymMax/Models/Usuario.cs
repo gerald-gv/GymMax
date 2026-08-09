@@ -54,6 +54,5 @@ namespace GymMax.Domain.Entities {
         [ForeignKey(nameof(RolId))]
         public Rol? Rol { get; set; }
 
-        public Coach? Coach { get; set; }
     }
 }

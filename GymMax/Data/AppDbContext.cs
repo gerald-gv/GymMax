@@ -14,7 +14,6 @@ namespace GymMax.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Sede> Sedes { get; set; }
-        public DbSet<Coach> Coaches { get; set; }
         public DbSet<Asistencia> Asistencias { get; set; }
         public DbSet<Pago> Pagos { get; set; }
         public DbSet<Suscripcion> Suscripciones { get; set; }
@@ -36,9 +35,6 @@ namespace GymMax.Data
             modelBuilder.Entity<Sede>()
                 .ToTable("Sede");
 
-            modelBuilder.Entity<Coach>()
-                .ToTable("Coach");
-
             modelBuilder.Entity<Asistencia>()
                 .ToTable("Asistencia");
 
@@ -58,13 +54,6 @@ namespace GymMax.Data
                 .HasOne(u => u.Rol)
                 .WithMany()
                 .HasForeignKey(u => u.RolId);
-
-
-            modelBuilder.Entity<Coach>()
-                .HasOne(c => c.Sede)
-                .WithMany()
-                .HasForeignKey(c => c.SedeId);
-
 
             modelBuilder.Entity<Asistencia>()
                 .HasOne(a => a.Usuario)

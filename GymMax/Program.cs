@@ -1,6 +1,5 @@
 using GymMax.Data;
 using GymMax.Services.Auth;
-using GymMax.Services.Coaches;
 using GymMax.Services.Dashboard;
 using GymMax.Services.Planes;
 using GymMax.Services.PlanesPublic;
@@ -29,7 +28,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ISuscripcionService, SuscripcionService>();
-builder.Services.AddScoped<ICoachService, CoachService>();
 
 // HttpClient para MercadoPago
 builder.Services.AddHttpClient("MercadoPago", client =>

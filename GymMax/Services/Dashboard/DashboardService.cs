@@ -23,9 +23,6 @@ namespace GymMax.Services.Dashboard {
                 TotalClientes = await _context.Usuarios
                     .CountAsync(u => u.RolId == (int)RolUsuario.Cliente),
 
-                TotalCoaches = await _context.Usuarios
-                    .CountAsync(u => u.RolId == (int)RolUsuario.Coach),
-
                 TotalPlanes = await _context.Planes.CountAsync(),
 
                 TotalSedes = await _context.Sedes.CountAsync(),

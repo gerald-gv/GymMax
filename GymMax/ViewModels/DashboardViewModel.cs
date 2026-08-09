@@ -7,7 +7,6 @@ namespace GymMax.ViewModels
         // Contadores principales
         public int TotalUsuarios       { get; set; }
         public int TotalClientes       { get; set; }
-        public int TotalCoaches        { get; set; }
         public int TotalPlanes         { get; set; }
         public int TotalSedes          { get; set; }
         public int TotalSuscripciones  { get; set; }
