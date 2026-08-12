@@ -25,5 +25,7 @@ namespace GymMax.Services.Usuarios {
         Task<bool> ExistsAsync(int id);
 
         Task<SelectList> GetRolesSelectListAsync(int? selected = null);
+
+        string GenerarCodigoMembresia();
     }
 }
