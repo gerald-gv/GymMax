@@ -139,7 +139,7 @@ namespace GymMax.Services.Usuarios {
                 );
         }
 
-        private string GenerarCodigoMembresia() {
+        public string GenerarCodigoMembresia() {
             return $"GM-{Guid.NewGuid().ToString()[..8].ToUpper()}";
         }
     }

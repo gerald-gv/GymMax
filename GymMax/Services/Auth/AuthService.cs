@@ -1,6 +1,7 @@
 ﻿using GymMax.Data;
 using GymMax.Domain.Entities;
 using GymMax.Enums;
+using GymMax.Services.Usuarios;
 using GymMax.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -13,10 +14,12 @@ namespace GymMax.Services.Auth {
 
         private readonly AppDbContext _context;
         private readonly PasswordHasher<Usuario> _passwordHasher;
+        private readonly IUsuarioService _usuarioService;
 
-        public AuthService(AppDbContext context) {
+        public AuthService(AppDbContext context, IUsuarioService usuarioService) {
             _context = context;
             _passwordHasher = new PasswordHasher<Usuario>();
+            _usuarioService = usuarioService;
         }
 
         public async Task<ClaimsPrincipal?> AutenticarAsync(LoginViewModel model) {
@@ -95,7 +98,8 @@ namespace GymMax.Services.Auth {
                 FechaNacimiento = model.FechaNacimiento,
                 RolId = rolCliente.RolId,
                 FechaRegistro = DateTime.UtcNow,
-                Estado = EstadoUsuario.Activo
+                Estado = EstadoUsuario.Activo,
+                CodigoMembresia = _usuarioService.GenerarCodigoMembresia()
             };
 
             usuario.PasswordHash = _passwordHasher.HashPassword(usuario, model.Password);
