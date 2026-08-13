@@ -2,6 +2,42 @@
 @{
     ViewData["Title"] = "Confirmar compra";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var suscripcionActiva = ViewBag.SuscripcionActiva as GymMax.Models.Suscripcion;
+
+    bool tieneSuscripcion = suscripcionActiva != null;
+    bool mismoPlan = tieneSuscripcion && suscripcionActiva!.PlanId == Model.PlanId;
+    bool esUpgrade = tieneSuscripcion && Model.Precio > suscripcionActiva!.Plan.Precio;
+    bool esDowngrade = tieneSuscripcion && Model.Precio < suscripcionActiva!.Plan.Precio;
+
+    string titulo;
+    string descripcion;
+    string textoBoton;
+
+    if (!tieneSuscripcion)
+    {
+        titulo = "Confirmar suscripción";
+        descripcion = "Revisa los detalles de tu plan antes de proceder al pago seguro.";
+        textoBoton = "Pagar con MercadoPago";
+    }
+    else if (mismoPlan)
+    {
+        titulo = "Renovar suscripción";
+        descripcion = "Tu suscripción actual se extenderá por la duración de este plan.";
+        textoBoton = "Renovar con MercadoPago";
+    }
+    else if (esUpgrade)
+    {
+        titulo = "Cambiar de plan";
+        descripcion = "Estás cambiando a un plan superior.";
+        textoBoton = "Continuar con MercadoPago";
+    }
+    else
+    {
+        titulo = "Cambiar de plan";
+        descripcion = "Este plan tiene un precio menor que tu suscripción actual.";
+        textoBoton = "Continuar";
+    }
 }
 
 <style>
@@ -14,52 +50,154 @@
     <div class="card border-0 shadow-sm checkout-card bg-white w-100" style="max-width: 480px;">
         <div class="card-body p-4 p-md-5">
 
-            <!-- Icono y Encabezado -->
+            <!-- Encabezado -->
             <div class="text-center mb-4">
                 <span class="bg-primary-subtle text-primary p-3 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
                     <i class="bi bi-shield-check fs-2"></i>
                 </span>
-                <h4 class="fw-bold text-dark mb-1">Confirmar suscripción</h4>
-                <p class="text-secondary small mb-0">Revisa los detalles de tu plan antes de proceder al pago seguro.</p>
+
+                <h4 class="fw-bold text-dark mb-1">
+                    @titulo
+                </h4>
+
+                <p class="text-secondary small mb-0">
+                    @descripcion
+                </p>
             </div>
 
-            <!-- Resumen del Plan (Tarjeta Interna) -->
+            @if (tieneSuscripcion)
+            {
+                <!-- Suscripción actual -->
+                <div class="alert alert-light border rounded-3 mb-4">
+                    <div class="small text-secondary mb-1">
+                        Tu suscripción actual
+                    </div>
+
+                    <div class="fw-bold text-dark">
+                        @suscripcionActiva!.Plan.Nombre
+                    </div>
+
+                    <div class="small text-secondary">
+                        S/ @suscripcionActiva.Plan.Precio.ToString("N2")
+                        · vence @suscripcionActiva.FechaFin.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+            }
+
+            <!-- Resumen del nuevo plan -->
             <div class="bg-light p-3 p-sm-4 rounded-3 mb-4 border">
+
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="fw-bold text-dark m-0 fs-5">@Model.Nombre</h5>
+                    <h5 class="fw-bold text-dark m-0 fs-5">
+                        @Model.Nombre
+                    </h5>
+
                     <span class="badge bg-white text-dark border fw-normal px-2.5 py-1.5 rounded-2 d-inline-flex align-items-center">
-                        <i class="bi bi-clock-history me-1 text-primary"></i> @Model.DuracionDias días
+                        <i class="bi bi-clock-history me-1 text-primary"></i>
+                        @Model.DuracionDias días
                     </span>
                 </div>
 
-                <p class="text-secondary small mb-3">@Model.Descripcion</p>
+                <p class="text-secondary small mb-3">
+                    @Model.Descripcion
+                </p>
 
                 <div class="pt-3 border-top d-flex justify-content-between align-items-baseline">
-                    <span class="text-secondary small text-uppercase fw-semibold">Total a pagar</span>
+                    <span class="text-secondary small text-uppercase fw-semibold">
+                        Precio del plan
+                    </span>
+
                     <div class="d-flex align-items-baseline">
-                        <span class="fs-6 fw-semibold text-secondary me-1">S/</span>
-                        <span class="fs-3 fw-bold text-dark">@Model.Precio.ToString("N2")</span>
+                        <span class="fs-6 fw-semibold text-secondary me-1">
+                            S/
+                        </span>
+
+                        <span class="fs-3 fw-bold text-dark">
+                            @Model.Precio.ToString("N2")
+                        </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Formulario de Acción -->
-            <form asp-action="IniciarPago" asp-controller="PagoMP" method="post">
-                <input type="hidden" name="planId" value="@Model.PlanId" />
-                <div class="d-grid gap-2.5">
-                    <button type="submit" class="btn btn-primary py-2.5 fw-semibold rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                        <i class="bi bi-credit-card-fill fs-6"></i> Pagar con MercadoPago
-                    </button>
-                    <a asp-controller="Cliente" asp-action="Planes" class="btn btn-outline-secondary py-2 fw-semibold rounded-3 text-center">
+            @if (mismoPlan)
+            {
+                <!-- Renovación -->
+                <div class="alert alert-info border-0 bg-info-subtle text-info-emphasis small rounded-3 mb-4">
+                    <i class="bi bi-arrow-repeat me-1"></i>
+                    Al renovar, se añadirán
+                    <strong>@Model.DuracionDias días</strong>
+                    a tu suscripción actual.
+                </div>
+            }
+            else if (esUpgrade)
+            {
+                <!-- Upgrade -->
+                <div class="alert alert-success border-0 bg-success-subtle text-success-emphasis small rounded-3 mb-4">
+                    <i class="bi bi-arrow-up-circle me-1"></i>
+                    Estás cambiando de
+                    <strong>@suscripcionActiva!.Plan.Nombre</strong>
+                    a un plan superior.
+                </div>
+            }
+            else if (esDowngrade)
+            {
+                <!-- Downgrade -->
+                <div class="alert alert-warning border-0 bg-warning-subtle text-warning-emphasis small rounded-3 mb-4">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Este plan tiene un precio menor que tu suscripción actual.
+                    El cambio de plan se puede programar para cuando termine tu suscripción actual.
+                </div>
+            }
+
+            <!-- Formulario -->
+            <form asp-action="IniciarPago"
+                  asp-controller="PagoMP"
+                  method="post">
+
+                <input type="hidden"
+                       name="planId"
+                       value="@Model.PlanId" />
+
+                <input type="hidden"
+                       name="tipoOperacion"
+                       value="@(mismoPlan ? "Renovacion" : esUpgrade ? "CambioPlan" : "Nueva")" />
+
+                <div class="d-grid gap-2">
+
+                    @if (!esDowngrade)
+                    {
+                        <button type="submit"
+                                class="btn btn-primary py-2 fw-semibold rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+
+                            <i class="bi bi-credit-card-fill fs-6"></i>
+
+                            @textoBoton
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button"
+                                class="btn btn-secondary py-2 fw-semibold rounded-3"
+                                disabled>
+                            Cambio no disponible todavía
+                        </button>
+                    }
+
+                    <a asp-controller="Cliente"
+                       asp-action="Planes"
+                       class="btn btn-outline-secondary py-2 fw-semibold rounded-3 text-center">
+
                         Cancelar
                     </a>
                 </div>
             </form>
-
-            <!-- Nota de Pago Seguro -->
+            <!-- Nota -->
             <div class="text-center mt-4">
-                <span class="text-muted small d-inline-flex align-items-center gap-1" style="font-size: 0.8rem;">
-                    <i class="bi bi-lock-fill text-success"></i> Transacción procesada de forma segura
+                <span class="text-muted small d-inline-flex align-items-center gap-1"
+                      style="font-size: 0.8rem;">
+
+                    <i class="bi bi-lock-fill text-success"></i>
+                    Transacción procesada de forma segura
                 </span>
             </div>
 
