@@ -97,6 +97,7 @@ namespace GymMax.Controllers
             var client   = _httpClientFactory.CreateClient("MercadoPago");
             var response = await client.GetAsync($"/v1/payments/{payment_id}");
 
+
             if (!response.IsSuccessStatusCode)
                 return RedirectToAction("Error", new { planId });
 
@@ -120,7 +121,6 @@ namespace GymMax.Controllers
                 s.UsuarioId == usuarioId &&
                 s.PlanId    == planId    &&
                 s.Estado    == EstadoSuscripcion.Activa);
-
             if (!yaExiste)
             {
                 var hoy = DateOnly.FromDateTime(DateTime.Today);
