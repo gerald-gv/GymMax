@@ -161,6 +161,8 @@ namespace GymMax.Controllers
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         principal
                     );
+                TempData["RegistroExitoso"] =
+                $"Tu cuenta ha sido creada correctamente, {model.Nombres}!";
 
                 return RedirectSegunRol();
             }
