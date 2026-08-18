@@ -1,0 +1,259 @@
+﻿@model GymMax.Models.Conversacion
+@using GymMax.Enums
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Chat";
+    Layout = User.IsInRole("Administrador")
+        ? "~/Views/Shared/_LayoutDashboard.cshtml"
+        : "~/Views/Shared/_Layout.cshtml";
+    var usuarioIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    int.TryParse(usuarioIdStr, out int usuarioId);
+    string nombreConversacion;
+    if (Model.Tipo == TipoConversacion.Grupo)
+    {
+        nombreConversacion = Model.Nombre ?? "Grupo sin nombre";
+    }
+    else
+    {
+        var otroUsuario = Model.Miembros
+            .FirstOrDefault(m => m.UsuarioId != usuarioId);
+        nombreConversacion = otroUsuario != null
+            ? $"{otroUsuario.Usuario.Nombres} {otroUsuario.Usuario.Apellidos}"
+            : "Conversación privada";
+    }
+    @if (Model.Tipo == TipoConversacion.Grupo &&
+     User.IsInRole("Administrador"))
+    {
+        <a asp-controller="Chat"
+           asp-action="AdministrarGrupo"
+           asp-route-id="@Model.ConversacionId"
+           class="btn btn-outline-primary rounded-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-gear-fill"></i>
+            Administrar grupo
+        </a>
+    }
+}
+<style>
+    .chat-container {
+        height: 70vh;
+        min-height: 500px;
+    }
+    .chat-messages {
+        overflow-y: auto;
+        background-color: #f8f9fa;
+    }
+    .message-row {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+        .message-row.mine {
+            justify-content: flex-end;
+        }
+        .message-row.theirs {
+            justify-content: flex-start;
+        }
+    .message-bubble {
+        max-width: 70%;
+        padding: 0.7rem 1rem;
+        border-radius: 1rem;
+        word-wrap: break-word;
+    }
+    .message-row.mine .message-bubble {
+        background-color: #0d6efd;
+        color: white;
+        border-bottom-right-radius: 0.25rem;
+    }
+    .message-row.theirs .message-bubble {
+        background-color: white;
+        color: #212529;
+        border: 1px solid #dee2e6;
+        border-bottom-left-radius: 0.25rem;
+    }
+    .message-user {
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    .message-date {
+        font-size: 0.7rem;
+        opacity: 0.7;
+        margin-top: 0.3rem;
+    }
+    .chat-input {
+        resize: none;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<div class="container py-4">
+
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <a asp-controller="Chat"
+           asp-action="Index"
+           class="btn btn-outline-secondary rounded-3"
+           title="Volver a conversaciones">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div class="bg-primary-subtle text-primary rounded-circle
+            d-flex align-items-center justify-content-center"
+             style="width: 48px; height: 48px;">
+            @if (Model.Tipo == TipoConversacion.Grupo)
+            {
+                <i class="bi bi-people-fill fs-4"></i>
+            }
+            else
+            {
+                <i class="bi bi-person-fill fs-4"></i>
+            }
+        </div>
+        <div>
+            <h4 class="fw-bold text-dark mb-0">
+                @nombreConversacion
+            </h4>
+            <span class="text-secondary small">
+                @if (Model.Tipo == TipoConversacion.Grupo)
+                {
+                    @($"{Model.Miembros.Count(m => m.Activo)} miembros")
+                }
+                else
+                {
+                    @("Conversación privada")
+                }
+            </span>
+            @if (Model.Tipo == TipoConversacion.Grupo)
+            {
+                <form asp-controller="Chat"
+                      asp-action="SalirDeGrupo"
+                      method="post"
+                      onsubmit="return confirm('¿Seguro que deseas salir de este grupo?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="conversacionId" value="@Model.ConversacionId" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
+                        <i class="bi bi-box-arrow-right me-1"></i>
+                        Salir del grupo
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+    <!-- Chat -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden chat-container">
+        <!-- Mensajes -->
+        <div id="chatMessages"
+             class="chat-messages flex-grow-1 p-4">
+            @if (!Model.Mensajes.Any())
+            {
+                <div id="emptyChat"
+                     class="h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                    <div class="bg-light rounded-circle p-3 mb-3">
+                        <i class="bi bi-chat-text fs-2 text-secondary"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark">
+                        No hay mensajes todavía
+                    </h6>
+                    <p class="text-secondary small mb-0">
+                        Sé el primero en enviar un mensaje.
+                    </p>
+                </div>
+            }
+            else
+            {
+                foreach (var mensaje in Model.Mensajes.OrderBy(m => m.FechaEnvio))
+                {
+                    var esMio = mensaje.UsuarioId == usuarioId;
+
+                    <div id="mensaje-@mensaje.MensajeId"
+                         class="message-row @(esMio ? "mine" : "theirs")">
+
+                        <div class="message-bubble">
+
+                            @if (!esMio)
+                            {
+                                <div class="message-user">
+                                    @mensaje.Usuario.Nombres @mensaje.Usuario.Apellidos
+                                </div>
+                            }
+
+                            <div class="message-content">
+                                @if (mensaje.Eliminado)
+                                {
+                                    <div class="fst-italic opacity-75">
+                                        Este mensaje fue eliminado.
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="message-text">
+                                        @mensaje.Contenido
+                                    </div>
+
+                                    @if (mensaje.Editado)
+                                    {
+                                        <span class="small fst-italic opacity-75">
+                                            (editado)
+                                        </span>
+                                    }
+                                }
+                            </div>
+
+                            <div class="message-date text-end">
+                                @mensaje.FechaEnvio.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+
+                            @if (esMio && !mensaje.Eliminado)
+                            {
+                                <div class="message-actions mt-2 d-flex justify-content-end gap-2">
+
+                                    <button type="button"
+                class="btn btn-sm btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                style="width: 30px; height: 30px;"
+                onclick="editarMensaje(@mensaje.MensajeId)"
+                title="Editar mensaje">
+            <i class="bi bi-pencil-fill text-dark"></i>
+        </button>
+                                    <button type="button"
+                class="btn btn-sm btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                style="width: 30px; height: 30px;"
+                onclick="eliminarMensaje(@mensaje.MensajeId)"
+                title="Eliminar mensaje">
+            <i class="bi bi-trash-fill text-danger"></i>
+        </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <!-- Campo para escribir -->
+        <div class="border-top bg-white p-3">
+            <form id="formEnviarMensaje">
+                <div class="input-group">
+                    <textarea id="mensajeInput"
+                              class="form-control chat-input"
+                              rows="1"
+                              maxlength="2000"
+                              placeholder="Escribe un mensaje..."
+                              required></textarea>
+                    <button type="submit"
+                            class="btn btn-primary px-4"
+                            title="Enviar mensaje">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+                <div class="text-secondary small mt-1">
+                    Máximo 2000 caracteres.
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <!-- SignalR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script>
+        const conversacionId = @Model.ConversacionId;
+        const usuarioId = @usuarioId;    
+    </script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}

@@ -22,7 +22,7 @@ namespace GymMax.Domain.Entities {
         public string Apellidos { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(8)]
+        [RegularExpression(@"^\d{8}$", ErrorMessage = "El DNI debe tener exactamente 8 dígitos numéricos.")]
         public string Dni { get; set; } = string.Empty;
 
         [Required]
@@ -31,8 +31,7 @@ namespace GymMax.Domain.Entities {
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [Phone]
-        [MaxLength(20)]
+        [RegularExpression(@"^\d{9}$", ErrorMessage = "El teléfono debe tener exactamente 9 dígitos numéricos.")]
         public string Telefono { get; set; } = string.Empty;
 
         [Required]
@@ -53,6 +52,6 @@ namespace GymMax.Domain.Entities {
 
         [ForeignKey(nameof(RolId))]
         public Rol? Rol { get; set; }
-
+        public ICollection<Suscripcion> Suscripciones { get; set; }= new List<Suscripcion>();
     }
 }

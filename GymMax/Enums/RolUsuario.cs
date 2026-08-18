@@ -1,7 +1,6 @@
 namespace GymMax.Enums {
     public enum RolUsuario {
         Administrador = 1,
-        Cliente = 2,
-        Coach = 3,
+        Cliente = 2
     }
 }

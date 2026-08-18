@@ -1,0 +1,107 @@
+﻿@model IEnumerable<GymMax.Models.Conversacion>
+@using GymMax.Enums
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Grupos";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+
+    var idActualStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    int.TryParse(idActualStr, out int idActual);
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-people-fill me-2 text-primary"></i>
+                Grupos
+            </h2>
+            <p class="text-secondary mb-0">
+                Lista de todos los grupos activos del sistema.
+            </p>
+        </div>
+        <a asp-controller="Chat" asp-action="CrearGrupo"
+           class="btn btn-primary rounded-3">
+            <i class="bi bi-plus-lg me-1"></i>
+            Crear grupo
+        </a>
+    </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-3">
+            @TempData["Exito"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-warning border-0 shadow-sm rounded-3">
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-secondary">
+            <i class="bi bi-people fs-1"></i>
+            <p class="mt-2 mb-0">No hay grupos creados.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var grupo in Model)
+            {
+                var tieneAdmin = grupo.Miembros.Any(m =>
+                m.Activo && m.Usuario.Rol.Nombre == RolUsuario.Administrador.ToString());
+
+                var yaEsMiembro = grupo.Miembros.Any(m =>
+                    m.Activo && m.UsuarioId == idActual);
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 @(tieneAdmin ? "" : "border border-danger border-2")">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
+                                <h5 class="fw-bold mb-0 text-truncate" title="@grupo.Nombre">
+                                    @grupo.Nombre
+                                </h5>
+                                @if (!tieneAdmin)
+                                {
+                                    <span class="badge bg-danger-subtle text-danger flex-shrink-0">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                        Sin administrador
+                                    </span>
+                                }
+                            </div>
+
+                            <p class="text-secondary small mb-3">
+                                <i class="bi bi-people me-1"></i>
+                                @grupo.Miembros.Count(m => m.Activo) miembros
+                            </p>
+
+                            <div class="d-flex gap-2 mt-auto">
+                                <a asp-controller="Chat" asp-action="AdministrarGrupo"
+                                   asp-route-id="@grupo.ConversacionId"
+                                   class="btn btn-outline-secondary btn-sm rounded-3 flex-grow-1">
+                                    Gestionar
+                                </a>
+
+                                @if (!yaEsMiembro)
+                                {
+                                    <form asp-controller="Chat" asp-action="UnirmeAGrupo" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="conversacionId" value="@grupo.ConversacionId" />
+                                        <button type="submit" class="btn btn-primary btn-sm rounded-3">
+                                            <i class="bi bi-box-arrow-in-right me-1"></i>
+                                            Unirme
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

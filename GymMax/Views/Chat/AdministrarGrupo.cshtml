@@ -1,0 +1,283 @@
+﻿@model GymMax.Models.Conversacion
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Gestionar grupo";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    var usuariosDisponibles =
+        ViewBag.UsuariosDisponibles as List<GymMax.Domain.Entities.Usuario>
+        ?? new List<GymMax.Domain.Entities.Usuario>();
+    var suscripcionesActivas =
+    ViewBag.SuscripcionesActivas as List<GymMax.Models.Suscripcion>
+    ?? new List<GymMax.Models.Suscripcion>();
+    var usuarioActualId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+    int.TryParse(usuarioActualId, out int idActual);
+}
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                Gestionar grupo
+            </h2>
+            <p class="text-secondary mb-0">
+                @Model.Nombre
+            </p>
+        </div>
+        <button type="button"
+                onclick="if (document.referrer && document.referrer.includes(window.location.host)) { history.back(); } else { window.location.href = '@Url.Action("Index", "Chat")'; }"
+                class="btn btn-outline-secondary rounded-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </button>
+    </div>
+    <!-- Alertas -->
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-3">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["Exito"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm rounded-3">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["Error"]
+        </div>
+    }
+    <div class="row g-4">
+        <!-- Miembros actuales -->
+        <div class="col-12 col-lg-7">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-header bg-white border-0 p-4">
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-people-fill text-primary me-2"></i>
+                        Miembros del grupo
+                    </h5>
+
+                    <p class="text-secondary small mb-0">
+                        Usuarios que actualmente pertenecen al grupo.
+                    </p>
+                </div>
+                <div class="card-body p-4">
+
+                    @{
+                        var miembrosActivos =
+                            Model.Miembros
+                                .Where(m => m.Activo)
+                                .OrderBy(m => m.Usuario.Nombres)
+                                .ToList();
+                    }
+                    @if (!miembrosActivos.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-people fs-1 text-secondary"></i>
+                            <p class="text-secondary mt-2 mb-0">
+                                Este grupo no tiene miembros.
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-2">
+                            @foreach (var miembro in miembrosActivos)
+                            {
+                                <div class="d-flex align-items-center justify-content-between border rounded-3 p-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 42px; height: 42px;">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">
+                                                @miembro.Usuario.Nombres
+                                                @miembro.Usuario.Apellidos
+                                            </div>
+                                            <div class="text-secondary small">
+                                                @miembro.Usuario.Email
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (miembro.UsuarioId != idActual)
+                                    {
+                                        <form asp-controller="Chat"
+                                              asp-action="EliminarMiembro"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="conversacionId"
+                                                   value="@Model.ConversacionId" />
+                                            <input type="hidden"
+                                                   name="usuarioId"
+                                                   value="@miembro.UsuarioId" />
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger btn-sm rounded-3"
+                                                    onclick="return confirm('¿Eliminar este usuario del grupo?');">
+                                                <i class="bi bi-person-dash-fill"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary">Tú</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Agregar miembros -->
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 p-4">
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-person-plus-fill text-primary me-2"></i>
+                        Agregar miembros
+                    </h5>
+                    <p class="text-secondary small mb-0">
+                        Selecciona un usuario para agregarlo al grupo.
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (!usuariosDisponibles.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-person-check fs-1 text-secondary"></i>
+                            <p class="text-secondary mt-2 mb-0">
+                                Todos los usuarios ya pertenecen al grupo.
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Filtros -->
+                        <div class="row g-2 mb-3">
+
+                            <!-- Buscar por nombre -->
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-search text-secondary"></i>
+                                    </span>
+
+                                    <input type="text"
+                                           id="buscarUsuario"
+                                           class="form-control border-start-0"
+                                           placeholder="Buscar por nombre o apellido...">
+                                </div>
+                            </div>
+
+                            <!-- Filtrar por plan actual -->
+                            <div class="col-12">
+                                <select id="filtroPlan" class="form-select">
+                                    <option value="">Todos los planes</option>
+
+                                    @foreach (var plan in usuariosDisponibles
+                                        .SelectMany(u => u.Suscripciones)
+                                        .Where(s => s.Plan != null)
+                                        .Select(s => s.Plan)
+                                        .DistinctBy(p => p.PlanId)
+                                        .OrderBy(p => p.Nombre))
+                                    {
+                                        <option value="@plan.Nombre.ToLower()">
+                                            @plan.Nombre
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- Lista de usuarios -->
+                        <div class="d-flex flex-column gap-2">
+
+                            @foreach (var usuario in usuariosDisponibles)
+                            {
+                                var suscripcion = usuario.Suscripciones.FirstOrDefault();
+                                var nombrePlan = suscripcion?.Plan?.Nombre ?? "Sin plan activo";
+
+                                <div class="usuario-item border rounded-3 p-3"
+                                     data-nombre="@($"{usuario.Nombres} {usuario.Apellidos}".ToLower())"
+                                     data-plan="@nombrePlan.ToLower()">
+
+                                    <div class="d-flex align-items-center justify-content-between">
+
+                                        <div class="d-flex align-items-center gap-3">
+
+                                            <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 42px; height: 42px;">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+
+                                            <div>
+                                                <div class="fw-semibold text-dark">
+                                                    @usuario.Nombres @usuario.Apellidos
+                                                </div>
+
+                                                <div class="text-secondary small">
+                                                    @usuario.Email
+                                                </div>
+
+                                                <span class="badge bg-light text-dark border mt-1">
+                                                    <i class="bi bi-card-checklist me-1"></i>
+                                                    @nombrePlan
+                                                </span>
+                                            </div>
+
+                                        </div>
+
+                                        <form asp-controller="Chat"
+                                              asp-action="AgregarMiembro"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="conversacionId"
+                                                   value="@Model.ConversacionId" />
+
+                                            <input type="hidden"
+                                                   name="usuarioId"
+                                                   value="@usuario.UsuarioId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-sm rounded-3"
+                                                    title="Agregar usuario">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- Sin resultados -->
+                        <div id="sinResultados"
+                             class="text-center py-4 d-none">
+
+                            <i class="bi bi-search fs-2 text-secondary"></i>
+
+                            <p class="text-secondary small mt-2 mb-0">
+                                No se encontraron usuarios con esos filtros.
+                            </p>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/administrarGrupo.js" asp-append-version="true"></script>
+}

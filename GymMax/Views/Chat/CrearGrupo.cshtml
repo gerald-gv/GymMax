@@ -1,0 +1,243 @@
+﻿@model IEnumerable<GymMax.Domain.Entities.Usuario>
+@{
+    ViewData["Title"] = "Crear grupo";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+<div class="container-fluid py-4">
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-people-fill me-2 text-primary"></i>
+                Crear grupo
+            </h2>
+            <p class="text-secondary mb-0">
+                Crea una nueva conversación grupal y selecciona sus miembros.
+            </p>
+        </div>
+        <a asp-controller="Chat"
+           asp-action="Index"
+           class="btn btn-outline-secondary rounded-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </a>
+    </div>
+    <!-- Formulario -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+            <form asp-controller="Chat"
+                  asp-action="CrearGrupo"
+                  method="post">
+                @Html.AntiForgeryToken()
+                <!-- Nombre -->
+                <div class="mb-4">
+                    <label for="nombre"
+                           class="form-label fw-semibold text-dark">
+                        Nombre del grupo
+                    </label>
+                    <input type="text"
+                           id="nombre"
+                           name="nombre"
+                           class="form-control form-control-lg rounded-3"
+                           placeholder="Ej. Comunidad GymMax"
+                           maxlength="100" 
+                           required/>
+                    @Html.ValidationMessage(
+                        "nombre",
+                        null,
+                        new { @class = "text-danger small mt-1" }
+                    )
+                </div>
+                <!-- Miembros -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <label class="form-label fw-semibold text-dark mb-0">
+                                Miembros
+                            </label>
+                            <div class="text-secondary small">
+                                Selecciona los usuarios que pertenecerán al grupo.
+                            </div>
+                        </div>
+                        <span id="contadorMiembros"
+                              class="badge bg-primary-subtle text-primary rounded-pill">
+                            0 seleccionados
+                        </span>
+                    </div>
+                    <!-- Filtros -->
+                    <div class="row g-2 mb-3">
+
+                        <!-- Buscador -->
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search text-secondary"></i>
+                                </span>
+
+                                <input type="text"
+                                       id="buscarUsuario"
+                                       class="form-control bg-light border-start-0"
+                                       placeholder="Buscar por nombre, apellido o correo..." />
+                            </div>
+                        </div>
+
+                        <!-- Filtro por plan -->
+                        <div class="col-12">
+                            <select id="filtroPlan" class="form-select">
+                                <option value="">Todos los planes</option>
+
+                                @foreach (var plan in Model
+                                    .SelectMany(u => u.Suscripciones)
+                                    .Where(s => s.Plan != null)
+                                    .Select(s => s.Plan)
+                                    .DistinctBy(p => p.PlanId)
+                                    .OrderBy(p => p.Nombre))
+                                {
+                                    <option value="@plan.Nombre.ToLower()">
+                                        @plan.Nombre
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- Lista -->
+                    <div class="border rounded-3 overflow-hidden"
+                         id="listaUsuarios">
+
+                        @if (!Model.Any())
+                        {
+                            <div class="text-center p-4 text-secondary">
+                                <i class="bi bi-person-x fs-2 d-block mb-2"></i>
+                                No hay usuarios disponibles.
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var usuario in Model)
+                            {
+                                var suscripcion = usuario.Suscripciones.FirstOrDefault();
+                                var nombrePlan = suscripcion?.Plan?.Nombre ?? "Sin plan activo";
+
+                                <label class="usuario-item d-flex align-items-center gap-3 p-3 border-bottom"
+                                       data-busqueda="@($"{usuario.Nombres} {usuario.Apellidos} {usuario.Email}".ToLower())"
+                                       data-plan="@nombrePlan.ToLower()">
+
+                                    <input type="checkbox"
+                                           name="usuariosIds"
+                                           value="@usuario.UsuarioId"
+                                           class="form-check-input usuario-checkbox flex-shrink-0" />
+
+                                    <div class="bg-primary-subtle text-primary rounded-circle
+                                        d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 42px; height: 42px;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+
+                                    <div class="flex-grow-1">
+
+                                        <div class="fw-semibold text-dark">
+                                            @usuario.Nombres @usuario.Apellidos
+                                        </div>
+
+                                        <div class="text-secondary small">
+                                            @usuario.Email
+                                        </div>
+
+                                        <span class="badge bg-light text-dark border mt-1">
+                                            <i class="bi bi-card-checklist me-1"></i>
+                                            @nombrePlan
+                                        </span>
+
+                                    </div>
+
+                                    <i class="bi bi-check-circle-fill text-primary d-none check-icon"></i>
+
+                                </label>
+                            }
+                        }
+
+                        <!-- Sin resultados -->
+                        <div id="sinResultados"
+                             class="text-center p-4 text-secondary d-none">
+
+                            <i class="bi bi-search fs-2 d-block mb-2"></i>
+
+                            No se encontraron usuarios con esos filtros.
+
+                        </div>
+
+                    </div>
+
+                    @Html.ValidationMessage(
+                        "usuariosIds",
+                        null,
+                        new { @class = "text-danger small mt-2" }
+                    )
+                </div>
+
+                <!-- Información -->
+                <div class="alert alert-info border-0 bg-info-subtle
+                    text-info-emphasis rounded-3 mb-4">
+                    <div class="d-flex gap-2">
+                        <i class="bi bi-info-circle-fill fs-5"></i>
+
+                        <div class="small">
+                            El administrador que cree el grupo será agregado
+                            automáticamente como miembro y podrá administrarlo.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+
+                    <a asp-controller="Chat"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary rounded-3 fw-semibold px-4">
+                        <i class="bi bi-x-lg me-1"></i>
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary rounded-3 fw-semibold px-4">
+                        <i class="bi bi-people-fill me-1"></i>
+                        Crear grupo
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .usuario-item {
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+        .usuario-item:last-child {
+            border-bottom: 0 !important;
+        }
+
+        .usuario-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .usuario-item.seleccionado {
+            background-color: #eef5ff;
+        }
+
+    .usuario-checkbox {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+</style>
+
+@section Scripts {
+    <script src="~/js/crearGrupo.js" asp-append-version="true"></script>
+}
