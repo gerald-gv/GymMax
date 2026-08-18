@@ -105,7 +105,6 @@ namespace GymMax.Controllers
 
             return rol switch {
                 nameof(RolUsuario.Administrador) => RedirectToAction("Index", "Dashboard"),
-                nameof(RolUsuario.Coach)         => RedirectToAction("Index", "Home"),
                 nameof(RolUsuario.Cliente)       => RedirectToAction("Index", "Cliente"),
                 _                                => RedirectToAction("Login", "Auth")
             };
@@ -162,11 +161,11 @@ namespace GymMax.Controllers
                         principal
                     );
                 TempData["RegistroExitoso"] =
+
                 $"Tu cuenta ha sido creada correctamente, {model.Nombres}!";
 
                 return RedirectSegunRol();
             }
-
             return RedirectToAction("Login");
         }
 

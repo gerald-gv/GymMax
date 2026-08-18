@@ -43,7 +43,12 @@
             <div class="row g-3 mb-3">
                 <div class="col">
                     <label asp-for="Dni" class="form-label fw-semibold"></label>
-                    <input asp-for="Dni" class="form-control" />
+                    <input asp-for="Dni"
+                           class="form-control"
+                           inputmode="numeric"
+                           pattern="[0-9]*"
+                           maxlength="8"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" />
                     <span asp-validation-for="Dni" class="text-danger small"></span>
                 </div>
                 <div class="col">
@@ -61,7 +66,12 @@
 
             <div class="mb-3">
                 <label asp-for="Telefono" class="form-label fw-semibold"></label>
-                <input asp-for="Telefono" class="form-control" />
+                <input asp-for="Telefono"
+                       class="form-control"
+                       inputmode="numeric"
+                       pattern="[0-9]*"
+                       maxlength="9"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9)" />
                 <span asp-validation-for="Telefono" class="text-danger small"></span>
             </div>
 

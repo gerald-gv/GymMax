@@ -1,5 +1,7 @@
 using GymMax.Data;
+using GymMax.Hubs;
 using GymMax.Services.Auth;
+using GymMax.Services.ChatHub;
 using GymMax.Services.Dashboard;
 using GymMax.Services.Planes;
 using GymMax.Services.PlanesPublic;
@@ -14,11 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
-
 
 builder.Services.AddScoped<ISedeService, SedeService>();
 builder.Services.AddScoped<ISedesPublicService, SedesPublicService>();
@@ -28,6 +30,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ISuscripcionService, SuscripcionService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 // HttpClient para MercadoPago
 builder.Services.AddHttpClient("MercadoPago", client =>
@@ -62,7 +65,7 @@ app.UseRouting();
 
 app.UseAuthentication(); // debe ir antes de UseAuthorization
 app.UseAuthorization();
-
+app.MapHub<ChatHub>("/chatHub");
 app.MapStaticAssets();
 
 app.MapControllerRoute(
