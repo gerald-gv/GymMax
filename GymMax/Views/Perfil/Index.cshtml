@@ -1,0 +1,134 @@
+﻿@model GymMax.DTOs.PerfilViewDTO
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<div class="container py-4" style="max-width: 720px;">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-person-circle me-2 text-primary"></i>
+                Mi Perfil
+            </h2>
+            <p class="text-secondary mb-0">
+                Consulta y administra tu información personal.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["PerfilActualizado"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-3">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["PerfilActualizado"]
+        </div>
+    }
+    @if (TempData["PasswordActualizada"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-3">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["PasswordActualizada"]
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Encabezado con avatar -->
+            <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom">
+                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                     style="width: 64px; height: 64px;">
+                    <i class="bi bi-person-fill fs-2"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-5 text-dark">
+                        @Model.Nombres @Model.Apellidos
+                    </div>
+                    <div class="text-secondary small">
+                        @Model.Email
+                    </div>
+                    @{
+                        var estadoBadge = Model.Estado.ToString() == "Activo"
+                            ? "bg-success-subtle text-success"
+                            : "bg-danger-subtle text-danger";
+                    }
+                    <span class="badge @estadoBadge mt-1">
+                        @Model.Estado
+                    </span>
+                </div>
+            </div>
+
+            <!-- Datos personales -->
+            <div class="row g-4">
+
+                <div class="col-12 col-sm-6">
+                    <div class="text-secondary small mb-1">
+                        <i class="bi bi-card-text me-1"></i>
+                        DNI
+                    </div>
+                    <div class="fw-semibold text-dark">
+                        @Model.Dni
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="text-secondary small mb-1">
+                        <i class="bi bi-telephone-fill me-1"></i>
+                        Teléfono
+                    </div>
+                    <div class="fw-semibold text-dark">
+                        @Model.Telefono
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="text-secondary small mb-1">
+                        <i class="bi bi-cake2-fill me-1"></i>
+                        Fecha de Nacimiento
+                    </div>
+                    <div class="fw-semibold text-dark">
+                        @Model.FechaNacimiento.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="text-secondary small mb-1">
+                        <i class="bi bi-calendar-check-fill me-1"></i>
+                        Fecha de Registro
+                    </div>
+                    <div class="fw-semibold text-dark">
+                        @Model.FechaRegistro.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="text-secondary small mb-1">
+                        <i class="bi bi-upc-scan me-1"></i>
+                        Código de Membresía
+                    </div>
+                    <div class="fw-semibold text-dark">
+                        @(Model.CodigoMembresia ?? "—")
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Acciones -->
+            <div class="d-flex flex-wrap gap-2 pt-4 mt-4 border-top">
+                <a asp-action="Editar"
+                   class="btn btn-primary rounded-3 fw-semibold px-4 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-fill"></i>
+                    Editar Perfil
+                </a>
+                <a asp-action="CambiarPassword"
+                   class="btn btn-outline-secondary rounded-3 fw-semibold px-4 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-key-fill"></i>
+                    Cambiar Contraseña
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

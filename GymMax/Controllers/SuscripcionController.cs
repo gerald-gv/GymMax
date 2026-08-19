@@ -47,19 +47,32 @@ public class SuscripcionController : Controller
     }
 
     // POST: SUSCRIPCIONS/Create
+    // POST: SUSCRIPCIONS/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create( [Bind("SuscripcionId,UsuarioId,PlanId,PrecioPactado,FechaInicio,FechaFin,Estado")] Suscripcion suscripcion) {
+    public async Task<IActionResult> Create(
+    [Bind("UsuarioId,PlanId,PrecioPactado,FechaFin,Estado")] Suscripcion suscripcion)
+    {
+
         ModelState.Remove("Usuario");
         ModelState.Remove("Plan");
+        ModelState.Remove("FechaInicio");
 
-        if (ModelState.IsValid) {
+        suscripcion.FechaInicio = DateOnly.FromDateTime(DateTime.Now);
+
+        if (suscripcion.FechaFin <= suscripcion.FechaInicio)
+        {
+            ModelState.AddModelError(nameof(suscripcion.FechaFin),
+                "La fecha de fin debe ser posterior a la fecha de inicio.");
+        }
+
+        if (ModelState.IsValid)
+        {
             await _suscripcionService.CrearAsync(suscripcion);
             return RedirectToAction(nameof(Index));
         }
 
-        // Recargar selects si hay error de validación
-        await CargarViewBags( suscripcion.UsuarioId, suscripcion.PlanId );
+        await CargarViewBags(suscripcion.UsuarioId, suscripcion.PlanId);
         return View(suscripcion);
     }
 
@@ -82,13 +95,19 @@ public class SuscripcionController : Controller
     // POST: SUSCRIPCIONS/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit( int id, [Bind("SuscripcionId,UsuarioId,PlanId,PrecioPactado,FechaInicio,FechaFin,Estado")] Suscripcion suscripcion) {
-        if (id != suscripcion.SuscripcionId) {
+    public async Task<IActionResult> Edit(int id, [Bind("SuscripcionId,UsuarioId,PlanId,PrecioPactado,FechaInicio,FechaFin,Estado")] Suscripcion suscripcion)
+    {
+        if (id != suscripcion.SuscripcionId)
+        {
             return NotFound();
         }
-
         ModelState.Remove("Usuario");
         ModelState.Remove("Plan");
+        if (suscripcion.FechaFin <= suscripcion.FechaInicio)
+        {
+            ModelState.AddModelError(nameof(suscripcion.FechaFin),
+                "La fecha de fin debe ser posterior a la fecha de inicio.");
+        }
 
         if (ModelState.IsValid) {
             var actualizado = await _suscripcionService.ActualizarAsync(suscripcion);
@@ -137,37 +156,27 @@ public class SuscripcionController : Controller
 
     // Metodo auxiliar para cargar los datos necesarios para los selects
     private async Task CargarViewBags(
-        int? usuarioIdSeleccionado = null,
-        int? planIdSeleccionado = null) {
-        // Select de clientes: solo usuarios con rol Cliente
+    int? usuarioIdSeleccionado = null,
+    int? planIdSeleccionado = null)
+    {
         var clientes = await _suscripcionService.ObtenerClientesActivosAsync();
-
         ViewBag.UsuarioId = new SelectList(
-            clientes.Select(u => new {
-                Value = u.UsuarioId,
-                Text = $"{u.Nombres} {u.Apellidos}"
-            }),
-            "Value",
-            "Text",
-            usuarioIdSeleccionado
+            clientes.Select(u => new { Value = u.UsuarioId, Text = $"{u.Nombres} {u.Apellidos}" }),
+            "Value", "Text", usuarioIdSeleccionado
         );
 
-        // Select de planes activos: formato "Nombre — S/ precio"
         var planes = await _suscripcionService.ObtenerPlanesActivosAsync();
-
         ViewBag.PlanId = new SelectList(
-            planes.Select(p => new {
-                Value = p.PlanId,
-                Text = $"{p.Nombre} — S/ {p.Precio}",
-                Precio = p.Precio
-            }),
-            "Value",
-            "Text",
-            planIdSeleccionado
+            planes.Select(p => new { Value = p.PlanId, Text = $"{p.Nombre} — S/ {p.Precio}" }),
+            "Value", "Text", planIdSeleccionado
         );
 
-        // Precios de planes en JSON para autocompletar PrecioPactado
-        ViewBag.PlanesJson = JsonSerializer.Serialize(planes.ToDictionary(p => p.PlanId, p => p.Precio )
+        // Ahora incluye precio Y duracionDias
+        ViewBag.PlanesJson = JsonSerializer.Serialize(
+            planes.ToDictionary(
+                p => p.PlanId,
+                p => new { precio = p.Precio, duracionDias = p.DuracionDias }
+            )
         );
     }
 }
