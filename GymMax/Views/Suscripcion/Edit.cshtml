@@ -56,7 +56,8 @@ Layout = "~/Views/Shared/_LayoutDashboard.cshtml";}
 
             <div class="mb-3">
                 <label asp-for="FechaFin" class="form-label fw-semibold"></label>
-                <input asp-for="FechaFin" class="form-control" type="date" />
+                <input asp-for="FechaFin" class="form-control" type="date" id="inputFechaFin" />
+                <small class="text-muted">Se sugiere según la duración del plan, pero puedes ajustarla.</small>
                 <span asp-validation-for="FechaFin" class="text-danger small"></span>
             </div>
 
@@ -78,4 +79,23 @@ Layout = "~/Views/Shared/_LayoutDashboard.cshtml";}
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        const planes = @Html.Raw(ViewBag.PlanesJson ?? "{}");
+
+        // Fecha de inicio ORIGINAL de la suscripción (no la de hoy)
+        const fechaInicio = new Date("@Model.FechaInicio.ToString("yyyy-MM-dd")");
+
+        document.getElementById('selectPlan').addEventListener('change', function() {
+            const planId = this.value;
+            const inputFechaFin = document.getElementById('inputFechaFin');
+
+            if (planId && planes[planId] !== undefined) {
+                const fechaFin = new Date(fechaInicio);
+                fechaFin.setDate(fechaFin.getDate() + planes[planId].duracionDias);
+                inputFechaFin.value = fechaFin.toISOString().split('T')[0];
+            }
+            // Si no selecciona plan válido, no tocamos FechaFin (a diferencia de Create,
+            // aquí ya había un valor previo cargado que no queremos borrar innecesariamente)
+        });
+    </script>
 }

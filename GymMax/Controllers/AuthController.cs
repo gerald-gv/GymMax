@@ -161,7 +161,9 @@ namespace GymMax.Controllers
                         principal
                     );
                 TempData["RegistroExitoso"] =
-            $"Tu cuenta ha sido creada correctamente, {model.Nombres}!";
+
+                $"Tu cuenta ha sido creada correctamente, {model.Nombres}!";
+
                 return RedirectSegunRol();
             }
             return RedirectToAction("Login");

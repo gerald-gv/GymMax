@@ -63,9 +63,25 @@ namespace GymMax.Services.Suscripciones {
                 .ToListAsync();
         }
 
-        public async Task CrearAsync(Suscripcion suscripcion) {
-            _context.Suscripciones.Add(suscripcion);
+        public async Task CrearAsync(Suscripcion suscripcion)
+        {
+            var plan = await _context.Planes.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.PlanId == suscripcion.PlanId);
+            if (plan == null)
+                throw new InvalidOperationException("El plan seleccionado no existe.");
+            suscripcion.FechaInicio = DateOnly.FromDateTime(DateTime.Now); // fija, no negociable
 
+            _context.Suscripciones.Add(suscripcion);
+            await _context.SaveChangesAsync(); // Necesario para que EF genere el SuscripcionId
+
+            var pago = new Pago
+            {
+                SuscripcionId = suscripcion.SuscripcionId,
+                Monto = suscripcion.PrecioPactado,
+                FechaPago = DateTime.Now
+            };
+
+            _context.Pagos.Add(pago);
             await _context.SaveChangesAsync();
         }
 

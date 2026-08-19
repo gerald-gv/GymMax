@@ -50,13 +50,14 @@
 
             <div class="row g-3 mb-3">
                 <div class="col">
-                    <label asp-for="FechaInicio" class="form-label fw-semibold"></label>
-                    <input asp-for="FechaInicio" class="form-control" type="date" />
-                    <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                    <label class="form-label fw-semibold">Fecha Inicio</label>
+                    <input type="text" class="form-control" value="@DateTime.Now.ToString("dd/MM/yyyy")" disabled />
+                    <small class="text-muted">Se registra automáticamente con la fecha actual.</small>
                 </div>
                 <div class="col">
                     <label asp-for="FechaFin" class="form-label fw-semibold"></label>
-                    <input asp-for="FechaFin" class="form-control" type="date" />
+                    <input asp-for="FechaFin" class="form-control" type="date" id="inputFechaFin" />
+                    <small class="text-muted">Se sugiere según la duración del plan, pero puedes ajustarla.</small>
                     <span asp-validation-for="FechaFin" class="text-danger small"></span>
                 </div>
             </div>
@@ -78,16 +79,22 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        // Mapa de PlanId → Precio cargado desde el servidor
-        const precios = @Html.Raw(ViewBag.PlanesJson ?? "{}");
-
-        document.getElementById('selectPlan').addEventListener('change', function () {
+        // Mapa de PlanId → Precio cargado desde el servidor        
+        document.getElementById('selectPlan').addEventListener('change', function() {
+            const planes = @Html.Raw(ViewBag.PlanesJson ?? "{}");
             const planId = this.value;
             const inputPrecio = document.getElementById('inputPrecio');
-            if (planId && precios[planId] !== undefined) {
-                inputPrecio.value = precios[planId];
+            const inputFechaFin = document.getElementById('inputFechaFin');
+
+            if (planId && planes[planId] !== undefined) {
+                inputPrecio.value = planes[planId].precio;
+
+                const fechaFin = new Date();
+                fechaFin.setDate(fechaFin.getDate() + planes[planId].duracionDias);
+                inputFechaFin.value = fechaFin.toISOString().split('T')[0]; // <-- clave
             } else {
                 inputPrecio.value = '';
+                inputFechaFin.value = '';
             }
         });
     </script>
