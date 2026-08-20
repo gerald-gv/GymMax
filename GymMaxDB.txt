@@ -1,0 +1,181 @@
+/*CREANDO TABLAS*/
+CREATE TABLE Rol (
+    RolId INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(50) NOT NULL,
+
+    CONSTRAINT UQ_Rol_Nombre UNIQUE (Nombre)
+);
+
+CREATE TABLE Sede (
+    SedeId INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100) NOT NULL,
+    Direccion NVARCHAR(200) NOT NULL,
+    Telefono NVARCHAR(20) NOT NULL,
+    Horario NVARCHAR(150) NOT NULL,
+    Activo BIT NOT NULL DEFAULT 1,
+
+    CONSTRAINT UQ_Sede_Nombre UNIQUE (Nombre),
+    CONSTRAINT UQ_Sede_Telefono UNIQUE (Telefono)
+);
+
+CREATE TABLE Planes (
+    PlanId INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100) NOT NULL,
+    Descripcion NVARCHAR(250) NULL,
+    DuracionDias INT NOT NULL,
+    Precio DECIMAL(10,2) NOT NULL,
+    Activo BIT NOT NULL DEFAULT 1,
+
+    CONSTRAINT UQ_Planes_Nombre UNIQUE (Nombre)
+);
+
+CREATE TABLE Usuario (
+    UsuarioId INT IDENTITY(1,1) PRIMARY KEY,
+    RolId INT NOT NULL,
+    Nombres NVARCHAR(100) NOT NULL,
+    Apellidos NVARCHAR(100) NOT NULL,
+    Dni NVARCHAR(8) NOT NULL,
+    Email NVARCHAR(150) NOT NULL,
+    Telefono NVARCHAR(20) NOT NULL,
+    FechaNacimiento DATE NOT NULL,
+    PasswordHash NVARCHAR(255) NOT NULL,
+    CodigoMembresia NVARCHAR(20) NULL,
+    FechaRegistro DATETIME2 NOT NULL DEFAULT GETDATE(),
+    Estado INT NOT NULL,
+
+    CONSTRAINT FK_Usuario_Rol
+        FOREIGN KEY (RolId)
+        REFERENCES Rol(RolId),
+
+    CONSTRAINT UQ_Usuario_Dni UNIQUE (Dni),
+    CONSTRAINT UQ_Usuario_Email UNIQUE (Email)
+);
+GO
+
+-- Crear el índice único filtrado para admitir nulos fuera del CREATE TABLE
+CREATE UNIQUE INDEX UQ_Usuario_CodigoMembresia
+    ON Usuario(CodigoMembresia)
+    WHERE CodigoMembresia IS NOT NULL;
+GO
+
+CREATE TABLE Suscripcion (
+    SuscripcionId INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioId INT NOT NULL,
+    PlanId INT NOT NULL,
+    PrecioPactado DECIMAL(10,2) NOT NULL,
+    FechaInicio DATE NOT NULL,
+    FechaFin DATE NOT NULL,
+    Estado INT NOT NULL,
+
+    CONSTRAINT FK_Suscripcion_Usuario
+        FOREIGN KEY (UsuarioId)
+        REFERENCES Usuario(UsuarioId),
+
+    CONSTRAINT FK_Suscripcion_Planes
+        FOREIGN KEY (PlanId)
+        REFERENCES Planes(PlanId)
+);
+
+CREATE TABLE Pago (
+    PagoId INT IDENTITY(1,1) PRIMARY KEY,
+    SuscripcionId INT NOT NULL,
+    Monto DECIMAL(10,2) NOT NULL,
+    FechaPago DATETIME2 NOT NULL,
+
+    CONSTRAINT FK_Pago_Suscripcion
+        FOREIGN KEY (SuscripcionId)
+        REFERENCES Suscripcion(SuscripcionId)
+);
+
+CREATE TABLE Asistencia (
+    AsistenciaId INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioId INT NOT NULL,
+    SedeId INT NOT NULL,
+    FechaHoraEntrada DATETIME2 NOT NULL,
+
+    CONSTRAINT FK_Asistencia_Usuario
+        FOREIGN KEY (UsuarioId)
+        REFERENCES Usuario(UsuarioId),
+
+    CONSTRAINT FK_Asistencia_Sede
+        FOREIGN KEY (SedeId)
+        REFERENCES Sede(SedeId)
+);
+CREATE TABLE Conversaciones (
+    ConversacionId INT IDENTITY(1,1) PRIMARY KEY,
+    Tipo INT NOT NULL,
+    Nombre NVARCHAR(100) NULL,
+    FechaCreacion DATETIME2 NOT NULL DEFAULT GETDATE(),
+    CreadaPorUsuarioId INT NOT NULL,
+    Activa BIT NOT NULL DEFAULT 1,
+
+    CONSTRAINT FK_Conversaciones_Creador
+        FOREIGN KEY (CreadaPorUsuarioId)
+        REFERENCES Usuario(UsuarioId)
+);
+GO
+CREATE TABLE ConversacionMiembros (
+    ConversacionMiembroId INT IDENTITY(1,1) PRIMARY KEY,
+    ConversacionId INT NOT NULL,
+    UsuarioId INT NOT NULL,
+    FechaIngreso DATETIME2 NOT NULL DEFAULT GETDATE(),
+    Activo BIT NOT NULL DEFAULT 1,
+
+    CONSTRAINT FK_ConversacionMiembros_Conversaciones
+        FOREIGN KEY (ConversacionId)
+        REFERENCES Conversaciones(ConversacionId),
+
+    CONSTRAINT FK_ConversacionMiembros_Usuario
+        FOREIGN KEY (UsuarioId)
+        REFERENCES Usuario(UsuarioId),
+
+    CONSTRAINT UQ_ConversacionMiembros
+        UNIQUE (ConversacionId, UsuarioId)
+);
+GO
+CREATE TABLE Mensajes (
+    MensajeId INT IDENTITY(1,1) PRIMARY KEY,
+    ConversacionId INT NOT NULL,
+    UsuarioId INT NOT NULL,
+    Contenido NVARCHAR(MAX) NOT NULL,
+    FechaEnvio DATETIME2 NOT NULL DEFAULT GETDATE(),
+    Editado BIT NOT NULL DEFAULT 0,
+    Eliminado BIT NOT NULL DEFAULT 0,
+
+    CONSTRAINT FK_Mensajes_Conversaciones
+        FOREIGN KEY (ConversacionId)
+        REFERENCES Conversaciones(ConversacionId),
+
+    CONSTRAINT FK_Mensajes_Usuario
+        FOREIGN KEY (UsuarioId)
+        REFERENCES Usuario(UsuarioId)
+);
+GO
+INSERT INTO Rol (Nombre)
+VALUES 
+('Administrador'),
+('Cliente');
+
+INSERT INTO Sede (Nombre, Direccion, Telefono, Horario, Activo)
+VALUES
+('Sede Centro', 'Av. Principal 123', '987654321', '06:00 - 22:00', 1),
+('Sede Norte', 'Av. Los Olivos 456', '987654322', '06:00 - 22:00', 1),
+('Sede Sur', 'Av. Primavera 789', '987654323', '06:00 - 22:00', 1),
+('Sede Este', 'Av. Javier Prado 321', '987654324', '06:00 - 22:00', 1),
+('Sede Oeste', 'Av. Universitaria 654', '987654325', '06:00 - 22:00', 1);
+
+INSERT INTO Planes (Nombre, Descripcion, DuracionDias, Precio, Activo)
+VALUES
+('Básico', 'Acceso al gimnasio', 30, 79.90, 1),
+('Estándar', 'Incluye clases grupales', 30, 119.90, 1),
+('Premium', 'Acceso total y entrenador', 30, 179.90, 1),
+('Trimestral', 'Plan por 90 días', 90, 299.90, 1),
+('Anual', 'Plan por 365 días', 365, 999.90, 1);
+
+INSERT INTO Usuario (RolId, Nombres, Apellidos, Dni, Email, Telefono, FechaNacimiento, PasswordHash, CodigoMembresia, FechaRegistro, Estado)
+VALUES
+  (1, 'Admin',   'GymMax', '00000001', 'admin@gymmax.com',   '999000001', '1990-01-01', 'AQAAAAIAAYagAAAAEFimYPqAzpSH0lBdFc/jTo7M002Gij1smT4vtofCAWy/wGBcqwbHPpfHNX2uE8fD5w==', '',   GETDATE(), 1),
+  (2, 'Cliente', 'Prueba', '00000002', 'cliente@gymmax.com', '999000002', '1995-06-15', 'AQAAAAIAAYagAAAAEC+k7ZNIT+HXTOMUaycCdCLGY2WLcmC4YiqK4oV+bVYA1enZnzgfaMgd8+wbsQAZ7w==','GM-25AC0E4C' , GETDATE(), 1);
+
+-- ContraseñaAdmin: Admin123!
+-- ContraseñaCliente: Cliente123!
